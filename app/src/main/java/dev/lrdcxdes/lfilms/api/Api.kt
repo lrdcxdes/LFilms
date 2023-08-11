@@ -99,7 +99,7 @@ class Api {
                 .build()
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    continuation.resumeWithException(ApiError("Network error"))
+                    continuation.resumeWithException(e)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
@@ -135,16 +135,11 @@ class Api {
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    continuation.resumeWithException(ApiError("Network error"))
+                    continuation.resumeWithException(e)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     response.use {
-                        if (!response.isSuccessful) {
-                            continuation.resumeWithException(ApiError("Network error: ${response.code}"))
-                            return
-                        }
-
                         val body = response.body?.string()
 
                         if (body.isNullOrBlank()) {
@@ -217,16 +212,11 @@ class Api {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                continuation.resumeWithException(ApiError("Network error"))
+                continuation.resumeWithException(e)
             }
 
             override fun onResponse(call: Call, response: Response) {
                 response.use {
-                    if (!response.isSuccessful) {
-                        continuation.resumeWithException(ApiError("Network error: ${response.code}"))
-                        return
-                    }
-
                     val body = response.body?.string()
                     if (body == null) {
                         continuation.resume(null)
@@ -370,7 +360,7 @@ class Api {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                continuation.resumeWithException(ApiError("Network error"))
+                continuation.resumeWithException(e)
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -418,7 +408,7 @@ class Api {
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    continuation.resumeWithException(ApiError("Network error"))
+                    continuation.resumeWithException(e)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
@@ -535,7 +525,7 @@ class Api {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                continuation.resumeWithException(ApiError("Network error"))
+                continuation.resumeWithException(e)
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -601,7 +591,7 @@ class Api {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                continuation.resumeWithException(ApiError("Network error"))
+                continuation.resumeWithException(e)
             }
 
             override fun onResponse(call: Call, response: Response) {
