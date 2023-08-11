@@ -48,19 +48,22 @@ class Api {
                 .build()
             val response = chain.proceed(request)
             if (!response.isSuccessful) {
+                val errorTxt = "${chain.request().method} ${chain.request().url}\n" +
+                        "Response code: ${response.code}\n" +
+                        "Response body: ${response.body?.string()}"
                 if (response.body != null) {
                     val body = response.body!!.string()
                     val json: JSONObject
                     try {
                         json = JSONObject(body)
                     } catch (e: Exception) {
-                        throw ApiError("Network error")
+                        throw ApiError(errorTxt)
                     }
                     if (json.has("message")) {
                         throw ApiError(json.getString("message"))
                     }
                 } else {
-                    throw ApiError("Network error")
+                    throw ApiError(errorTxt)
                 }
             }
             response
