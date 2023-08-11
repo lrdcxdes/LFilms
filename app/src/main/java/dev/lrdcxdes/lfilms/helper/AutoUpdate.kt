@@ -74,7 +74,7 @@ fun AutoUpdate() {
 
 @SuppressLint("Range")
 private fun downloadAndInstallApk(context: Context) {
-    val url = "https://github.com/lrdcxdes/hdrezka-mirror/releases/latest/download/app-release.apk"
+    val url = "https://github.com/lrdcxdes/LFilms/releases/latest/download/app-release.apk"
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     context.startActivity(intent)
@@ -86,7 +86,7 @@ private suspend fun checkForUpdates(
 ) {
     withContext(Dispatchers.IO) {
         try {
-            val url = URL("https://raw.githubusercontent.com/lrdcxdes/hdrezka-mirror/main/version")
+            val url = URL("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/version")
             val connection = url.openConnection()
             val reader = BufferedReader(InputStreamReader(connection.getInputStream()))
             val actualVersion = reader.readLine()?.trim() ?: ""
