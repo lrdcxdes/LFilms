@@ -45,7 +45,7 @@ fun SettingsScreen(
     currentTheme: Theme,
     currentMirror: String,
     onMirrorChanged: (String) -> Unit,
-    onResetToActualMirror: () -> Unit,
+    onResetToActualMirror: () -> String,
     onThemeChanged: (Theme) -> Unit,
     context: Context
 ) {
@@ -201,7 +201,7 @@ fun ThemeSettingItem(
 fun DomainMirrorSettingItem(
     currentMirror: String,
     onMirrorChanged: (String) -> Unit,
-    onResetToActualMirror: () -> Unit
+    onResetToActualMirror: () -> String
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var newMirror by remember { mutableStateOf(currentMirror) }
@@ -248,7 +248,7 @@ fun DomainMirrorSettingItem(
 
                     Button(
                         onClick = {
-                            onResetToActualMirror()
+                            newMirror = onResetToActualMirror()
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.secondary,

@@ -580,7 +580,7 @@ class Api {
         })
     }
 
-    suspend fun setActualMirror() = suspendCoroutine { continuation ->
+    suspend fun setActualMirror(): String = suspendCoroutine { continuation ->
         val request = okhttp3.Request.Builder()
             .url("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/mirror.txt")
             .get()
@@ -596,19 +596,20 @@ class Api {
 
             override fun onResponse(call: Call, response: Response) {
                 response.use {
-                    val body = response.body?.string()
+                    var body = response.body?.string()
                     if (body == null) {
                         Log.e("API", "Empty response")
-                        continuation.resume(null)
+                        continuation.resume("")
                         return
                     }
+                    body = body.replace("\n", "")
 
                     val scheme = body.split("://")[0]
-                    val host = body.split("://")[1].split("\n")[0]
+                    val host = body.split("://")[1]
 
                     setScheme(scheme)
                     setHost(host)
-                    continuation.resume(Unit)
+                    continuation.resume(body)
                 }
             }
         })

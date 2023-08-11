@@ -94,10 +94,8 @@ fun MovieApp() {
     val defaultMoviesListState = remember { mutableStateOf<MoviesList?>(null) }
     val searchMoviesListState = remember { mutableStateOf<MoviesList?>(null) }
 
-    var currentMirror = api.getBaseUrl()
     var mirror by remember { mutableStateOf("") }
-
-    var actualMirror = ""
+    var actualMirror by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         val tempTheme = withContext(Dispatchers.IO) { getTheme(context) }
@@ -106,21 +104,22 @@ fun MovieApp() {
         }
 
         val tempMirror = withContext(Dispatchers.IO) { getMirror(context) }
-        try {
-            withContext(Dispatchers.IO) {
-                api.setActualMirror()
-                actualMirror = api.getBaseUrl()
-            }
-        } catch (e: ApiError) {
-            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
-            defaultMoviesListState.value = MoviesList(1, 1, emptyList())
-        }
 
-        currentMirror = if (tempMirror.isEmpty()) {
-            actualMirror
-        } else {
-            api.setMirror(tempMirror)
-            tempMirror
+        withContext(Dispatchers.IO) {
+            try {
+                actualMirror = api.setActualMirror()
+                println("Actual mirror: $actualMirror")
+            } catch (e: ApiError) {
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                defaultMoviesListState.value = MoviesList(1, 1, emptyList())
+            }
+
+            mirror = if (tempMirror.isEmpty()) {
+                actualMirror
+            } else {
+                api.setMirror(tempMirror)
+                tempMirror
+            }
         }
     }
 
@@ -138,7 +137,7 @@ fun MovieApp() {
     }
 
     LFilmsTheme(theme = currentTheme.value, dynamicColor = false) {
-        if (defaultMoviesListState.value == null) {
+        if (defaultMoviesListState.value == null || mirror.isEmpty()) {
             CircularProgressIndicator(
                 modifier = Modifier.size(48.dp),
                 color = MaterialTheme.colorScheme.secondary,
@@ -184,7 +183,7 @@ fun MovieApp() {
                     SettingsScreen(
                         navBar = { BottomNavigationBar(navController) },
                         currentTheme = currentTheme.value,
-                        currentMirror = currentMirror,
+                        currentMirror = mirror,
                         context = context,
                         onThemeChanged = { newTheme ->
                             currentTheme.value = newTheme
@@ -193,7 +192,7 @@ fun MovieApp() {
                             }
                         },
                         onMirrorChanged = { newMirror ->
-                            if (newMirror == currentMirror) {
+                            if (newMirror == mirror) {
                                 Toast.makeText(
                                     context,
                                     "Mirror is already $newMirror",
@@ -206,7 +205,6 @@ fun MovieApp() {
                                 defaultMoviesListState.value = null
                                 searchMoviesListState.value = null
                                 mirror = newMirror
-                                currentMirror = newMirror
 
                                 scope.launch {
                                     setMirror(newMirror, context)
@@ -232,19 +230,19 @@ fun MovieApp() {
                             }
                         },
                         onResetToActualMirror = {
-                            if (actualMirror == currentMirror) {
+                            println("[2] Actual mirror: $actualMirror")
+                            if (actualMirror == mirror) {
                                 Toast.makeText(
                                     context,
-                                    "Mirror is already $currentMirror",
+                                    "Mirror is already $actualMirror",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                return@SettingsScreen
+                                return@SettingsScreen actualMirror
                             }
 
                             defaultMoviesListState.value = null
                             searchMoviesListState.value = null
                             mirror = actualMirror
-                            currentMirror = actualMirror
 
                             scope.launch {
                                 setMirror(mirror, context)
@@ -252,13 +250,15 @@ fun MovieApp() {
 
                             Toast.makeText(
                                 context,
-                                "Mirror changed to $currentMirror",
+                                "Mirror changed to $actualMirror",
                                 Toast.LENGTH_SHORT
                             ).show()
 
                             navController.navigate("home") {
                                 popUpTo("home") { inclusive = true }
                             }
+
+                            return@SettingsScreen actualMirror
                         }
                     )
                 }
