@@ -1,8 +1,4 @@
-<p align="center">
-  <a href="https://github.com/lrdcxdes/LFilms/releases/latest/download/app-release.apk">
-    <img src="https://github.com/lrdcxdes/LFilms/assets/83734728/5123db57-6df4-4b9e-8cba-bbbad116fa1b" alt="Download" width="200">
-  </a>
-</p>
+[![Download](https://www.fxmedicine.com.au/sites/default/files/photos/green%20download%20button.png)](https://github.com/lrdcxdes/LFilms/releases/latest/download/app-release.apk)
 
 <h2>Dark Theme</h2>
 <div style="display: flex; justify-content: space-between;">
