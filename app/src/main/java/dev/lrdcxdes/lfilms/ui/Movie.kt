@@ -269,129 +269,137 @@ fun MovieScreen(
                                 color = Color.Gray,
                             )
                         }
-
-                        Row(
-                            modifier = Modifier
+                        Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+                            Row( modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                                .align(Alignment.BottomCenter)
-                        ) {
-                            // Add Trailer button with icon play when trailer url loaded
-                            Button(
-                                onClick = {
-                                    val intent = Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse(trailerUrl)
-                                    )
-                                    context.startActivity(intent)
-                                },
+                            ){
+                                Text("Info 1", color = Color.Green)
+                                Text("Info 1", color = Color.Green)
+                                Text("Info 1", color = Color.Green)
+                            }
+                            Row(
                                 modifier = Modifier
-                                    .weight(1f) // Occupy equal space
-                                    .padding(end = 8.dp), // Add spacing between buttons
-                                contentPadding = PaddingValues(8.dp),
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                             ) {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.Center
+                                // Add Trailer button with icon play when trailer url loaded
+                                Button(
+                                    onClick = {
+                                        val intent = Intent(
+                                            Intent.ACTION_VIEW,
+                                            Uri.parse(trailerUrl)
+                                        )
+                                        context.startActivity(intent)
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f) // Occupy equal space
+                                        .padding(end = 8.dp), // Add spacing between buttons
+                                    contentPadding = PaddingValues(8.dp),
                                 ) {
-                                    if (trailerUrl != "") {
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (trailerUrl != "") {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.PlayArrow,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(
+                                                    text = LocalContext.current.getString(R.string.trailer),
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                )
+                                            }
+                                        } else {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(24.dp),
+                                                color = Color.Gray
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // Add Watch button with icon play when translations loaded
+                                Button(
+                                    onClick = {
+                                        showSeasonEpisodeSheet()
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f) // Occupy equal space
+                                        .padding(end = 8.dp), // Add spacing between buttons
+                                    enabled = !movie.isComingSoon && !movie.isRestricted,
+                                    colors = ButtonDefaults.buttonColors(
+                                        disabledContainerColor = Color.Gray,
+                                        disabledContentColor = Color.White
+                                    ),
+                                    contentPadding = PaddingValues(8.dp),
+                                ) {
+                                    Box(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.Center
                                         ) {
-                                            Icon(
-                                                imageVector = Icons.Filled.PlayArrow,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(24.dp)
-                                            )
+                                            if (movie.isRestricted) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Lock,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            } else if (movie.isComingSoon) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.DateRange,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            } else {
+                                                Icon(
+                                                    imageVector = Icons.Filled.PlayArrow,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
-                                                text = LocalContext.current.getString(R.string.trailer),
+                                                text = LocalContext.current.getString(R.string.watch),
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis,
                                             )
                                         }
-                                    } else {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(24.dp),
-                                            color = Color.Gray
-                                        )
                                     }
                                 }
-                            }
 
-                            // Add Watch button with icon play when translations loaded
-                            Button(
-                                onClick = {
-                                    showSeasonEpisodeSheet()
-                                },
-                                modifier = Modifier
-                                    .weight(1f) // Occupy equal space
-                                    .padding(end = 8.dp), // Add spacing between buttons
-                                enabled = !movie.isComingSoon && !movie.isRestricted,
-                                colors = ButtonDefaults.buttonColors(
-                                    disabledContainerColor = Color.Gray,
-                                    disabledContentColor = Color.White
-                                ),
-                                contentPadding = PaddingValues(8.dp),
-                            ) {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        if (movie.isRestricted) {
-                                            Icon(
-                                                imageVector = Icons.Filled.Lock,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(24.dp)
-                                            )
-                                        } else if (movie.isComingSoon) {
-                                            Icon(
-                                                imageVector = Icons.Filled.DateRange,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(24.dp)
-                                            )
-                                        } else {
-                                            Icon(
-                                                imageVector = Icons.Filled.PlayArrow,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(24.dp)
+                                // Add Favorite button with icon
+                                Button(
+                                    onClick = {
+                                        isFavorite.value = !isFavorite.value
+                                        scope.launch {
+                                            onFavoriteSet(
+                                                setFavorite(
+                                                    movie.preview(),
+                                                    isFavorite.value,
+                                                    context
+                                                )
                                             )
                                         }
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = LocalContext.current.getString(R.string.watch),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                        )
-                                    }
+                                    },
+
+                                    ) {
+                                    Icon(
+                                        imageVector = if (isFavorite.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                        contentDescription = null
+                                    )
                                 }
-                            }
-
-                            // Add Favorite button with icon
-                            Button(
-                                onClick = {
-                                    isFavorite.value = !isFavorite.value
-                                    scope.launch {
-                                        onFavoriteSet(
-                                            setFavorite(
-                                                movie.preview(),
-                                                isFavorite.value,
-                                                context
-                                            )
-                                        )
-                                    }
-                                },
-
-                                ) {
-                                Icon(
-                                    imageVector = if (isFavorite.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                                    contentDescription = null
-                                )
                             }
                         }
                     }
