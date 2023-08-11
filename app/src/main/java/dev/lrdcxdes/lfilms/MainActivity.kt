@@ -80,12 +80,12 @@ fun MovieApp() {
     val favoriteMoviesListState = remember { mutableStateOf<List<MoviePreview>>(emptyList()) }
     val historyMoviesListState = remember { mutableStateOf<List<MoviePreview>>(emptyList()) }
 
-    val currentTheme = remember { mutableStateOf(Theme.LIGHT) }
-    if (isSystemInDarkTheme()) {
-        currentTheme.value = Theme.DARK
+    val currentTheme = if (isSystemInDarkTheme()) {
+        remember { mutableStateOf(Theme.LIGHT) }
     } else {
-        currentTheme.value = Theme.LIGHT
+        remember { mutableStateOf(Theme.DARK) }
     }
+
     val navController = rememberNavController()
 
     val context = LocalContext.current
@@ -122,7 +122,9 @@ fun MovieApp() {
             api.setMirror(tempMirror)
             tempMirror
         }
+    }
 
+    LaunchedEffect(mirror) {
         defaultMoviesListState.value = try {
             withContext(Dispatchers.IO) { defaultList(category = "watching") }
         } catch (e: ApiError) {

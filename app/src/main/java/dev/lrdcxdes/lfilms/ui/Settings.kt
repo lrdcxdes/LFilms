@@ -79,9 +79,7 @@ fun SettingsScreen(
                         onMirrorChanged = { newMirror ->
                             onMirrorChanged(newMirror)
                         },
-                        onResetToActualMirror = {
-                            onResetToActualMirror()
-                        }
+                        onResetToActualMirror = onResetToActualMirror
                     )
                 }
                 item {
