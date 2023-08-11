@@ -2,6 +2,7 @@ package dev.lrdcxdes.lfilms.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -35,7 +36,7 @@ private val darkColorScheme = darkColorScheme(
 
 @Composable
 fun LFilmsTheme(
-    theme: Theme = Theme.LIGHT,
+    theme: Theme = if (isSystemInDarkTheme()) Theme.DARK else Theme.LIGHT,
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit

@@ -29,13 +29,13 @@ suspend fun setTheme(theme: Theme, context: Context) {
     }
 }
 
-suspend fun getTheme(context: Context): Theme {
+suspend fun getTheme(context: Context): Theme? {
     val theme = context.dataStore.data.map { preferences ->
         preferences[KEY_THEME] ?: ""
     }
     return when (theme.first()) {
         "LIGHT" -> Theme.LIGHT
         "DARK" -> Theme.DARK
-        else -> Theme.LIGHT
+        else -> null
     }
 }

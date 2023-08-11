@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -80,6 +81,11 @@ fun MovieApp() {
     val historyMoviesListState = remember { mutableStateOf<List<MoviePreview>>(emptyList()) }
 
     val currentTheme = remember { mutableStateOf(Theme.LIGHT) }
+    if (isSystemInDarkTheme()) {
+        currentTheme.value = Theme.DARK
+    } else {
+        currentTheme.value = Theme.LIGHT
+    }
     val navController = rememberNavController()
 
     val context = LocalContext.current
@@ -95,7 +101,9 @@ fun MovieApp() {
 
     LaunchedEffect(Unit) {
         val tempTheme = withContext(Dispatchers.IO) { getTheme(context) }
-        currentTheme.value = tempTheme
+        if (tempTheme != null) {
+            currentTheme.value = tempTheme
+        }
 
         val tempMirror = withContext(Dispatchers.IO) { getMirror(context) }
         try {
