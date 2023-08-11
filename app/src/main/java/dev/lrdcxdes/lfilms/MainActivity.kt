@@ -81,9 +81,9 @@ fun MovieApp() {
     val historyMoviesListState = remember { mutableStateOf<List<MoviePreview>>(emptyList()) }
 
     val currentTheme = if (isSystemInDarkTheme()) {
-        remember { mutableStateOf(Theme.LIGHT) }
-    } else {
         remember { mutableStateOf(Theme.DARK) }
+    } else {
+        remember { mutableStateOf(Theme.LIGHT) }
     }
 
     val navController = rememberNavController()
