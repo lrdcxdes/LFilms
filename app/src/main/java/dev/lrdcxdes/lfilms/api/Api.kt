@@ -46,13 +46,22 @@ class Api {
                         .build()
                 )
                 .build()
-            chain.proceed(request)
-        }
-        // if network error occurs, call apierror
-        .addInterceptor { chain ->
-            val response = chain.proceed(chain.request())
+            val response = chain.proceed(request)
             if (!response.isSuccessful) {
-                throw ApiError("Network error")
+                if (response.body != null) {
+                    val body = response.body!!.string()
+                    val json: JSONObject
+                    try {
+                        json = JSONObject(body)
+                    } catch (e: Exception) {
+                        throw ApiError("Network error")
+                    }
+                    if (json.has("message")) {
+                        throw ApiError(json.getString("message"))
+                    }
+                } else {
+                    throw ApiError("Network error")
+                }
             }
             response
         }
