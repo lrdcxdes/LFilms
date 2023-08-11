@@ -1,6 +1,8 @@
 package dev.lrdcxdes.lfilms.ui
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import dev.lrdcxdes.lfilms.R
 import dev.lrdcxdes.lfilms.Theme
@@ -79,6 +82,18 @@ fun SettingsScreen(
                         onResetToActualMirror = {
                             onResetToActualMirror()
                         }
+                    )
+                }
+                item {
+                    // github link
+                    SettingItem(
+                        icon = ImageVector.vectorResource(R.drawable.ic_github),
+                        label = "GitHub",
+                        modifier = Modifier.clickable {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.data = Uri.parse("https://github.com/lrdcxdes/LFilms")
+                            context.startActivity(intent)
+                        },
                     )
                 }
                 // Add more settings items as needed

@@ -116,10 +116,11 @@ fun MovieApp() {
             defaultMoviesListState.value = MoviesList(1, 1, emptyList())
         }
 
-        if (tempMirror.isEmpty()) {
-            currentMirror = actualMirror
+        currentMirror = if (tempMirror.isEmpty()) {
+            actualMirror
         } else {
             api.setMirror(tempMirror)
+            tempMirror
         }
 
         defaultMoviesListState.value = try {

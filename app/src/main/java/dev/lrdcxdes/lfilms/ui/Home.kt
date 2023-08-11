@@ -220,32 +220,33 @@ fun HomeScreen(
                     }
                 }
 
-                IconButton(
-                    onClick = {
-                        showSearchBar = !showSearchBar
-                    },
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(16.dp),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color.Unspecified,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_search),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                }
-
                 if (!showSearchBar) {
+                    IconButton(
+                        onClick = {
+                            showSearchBar = !showSearchBar
+                        },
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(16.dp),
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = Color.Unspecified,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_search),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier
+                                .size(24.dp)
+                        )
+                    }
+
                     // categories center on the screen
                     LazyRow(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         items(categories) { category ->
