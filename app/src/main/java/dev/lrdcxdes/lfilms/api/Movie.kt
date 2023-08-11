@@ -1,5 +1,16 @@
 package dev.lrdcxdes.lfilms.api
 
+// extend int class
+class Votes(private val votes: Int) {
+    override fun toString(): String {
+        return when {
+            votes < 1000 -> votes.toString()
+            votes % 1000 < 500 -> "${votes / 1000}k"
+            else -> "${votes / 1000 + 1}k"
+        }
+    }
+}
+
 data class Movie(
     val id: Int,
     val path: String,
@@ -8,9 +19,9 @@ data class Movie(
     val imageUrl: String,
     val previewImageUrl: String,
     val ratingIMDB: Double,
-    val votesIMDB: Int,
+    val votesIMDB: Votes,
     val kinopoiskRating: Double,
-    val kinopoiskVotes: Int,
+    val kinopoiskVotes: Votes,
     val slogan: String,
     val releaseDate: String,
     val countries: List<String>,

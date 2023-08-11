@@ -270,14 +270,96 @@ fun MovieScreen(
                             )
                         }
                         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
-                            Row( modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                            ){
-                                Text("Info 1", color = Color.Green)
-                                Text("Info 1", color = Color.Green)
-                                Text("Info 1", color = Color.Green)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                            ) {
+                                // IMDB rating, Kinopoisk rating, duration, age limit
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        // rating
+                                        Text(
+                                            text = movie.ratingIMDB.toString(),
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+
+                                        // votes
+                                        Text(
+                                            text = "(${movie.votesIMDB})",
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 8.sp,
+                                            ),
+                                            color = Color.Gray,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+                                    }
+
+                                    // imdb text
+                                    Text(
+                                        text = LocalContext.current.getString(R.string.imdb),
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        color = Color.Gray,
+                                        modifier = Modifier.padding(start = 4.dp)
+                                    )
+                                }
+
+                                // Kinopoisk rating
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        // rating
+                                        Text(
+                                            text = movie.kinopoiskRating.toString(),
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+
+                                        // votes
+                                        Text(
+                                            text = "(${movie.kinopoiskVotes})",
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 8.sp,
+                                            ),
+                                            color = Color.Gray,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+                                    }
+
+                                    // kinopoisk text
+                                    Text(
+                                        text = LocalContext.current.getString(R.string.kinopoisk),
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        color = Color.Gray,
+                                        modifier = Modifier.padding(start = 4.dp)
+                                    )
+                                }
                             }
+
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()

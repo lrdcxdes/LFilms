@@ -56,8 +56,12 @@ fun LFilmsTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
-                theme == Theme.DARK
+            window.navigationBarColor = colorScheme.primary.toArgb()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.setDecorFitsSystemWindows(false)
+            } else {
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+            }
         }
     }
 
