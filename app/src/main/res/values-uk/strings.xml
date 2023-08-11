@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_label">Пошук</string>
+    <string name="home">Головна</string>
+    <string name="favorites">Обрані</string>
+    <string name="history">Історія</string>
+    <string name="settings">Налаштування</string>
+    <string name="network_error_title">Помилка мережі</string>
+    <string name="network_error_message">Немає з\'єднання з Інтернетом. Будь ласка, перевірте налаштування вашої мережі та спробуйте ще раз.</string>
+    <string name="retry">Повторити спробу</string>
+    <string name="no_movies_found">Не знайдено жодного фільму</string>
+    <string name="trailer">Трейлер</string>
+    <string name="watch">Дивитись</string>
+    <string name="duration">Тривалість</string>
+    <string name="slogan">Гасло</string>
+    <string name="release_date">Дата виходу</string>
+    <string name="countries">Країни</string>
+    <string name="directors">Режисери</string>
+    <string name="genres">Жанри</string>
+    <string name="from_series">Із серії</string>
+    <string name="actors">Актори</string>
+    <string name="translation">В перекладі</string>
+    <string name="season">Сезон</string>
+    <string name="episode">Серія</string>
+    <string name="close">Закрити</string>
+    <string name="confirm">Підтвердити</string>
+    <string name="select_season">Оберіть сезон</string>
+    <string name="dismiss">Відхилити</string>
+    <string name="select_episode">Оберіть серію</string>
+    <string name="select_translation">Оберіть переклад</string>
+    <string name="select_resolution">Будь ласка, оберіть якість</string>
+    <string name="theme">Тема</string>
+    <string name="select_theme">Оберіть тему</string>
+    <string name="domain_mirror">Дзеркало</string>
+    <string name="enter_domain_mirror">Введіть нове дзеркало домену</string>
+    <string name="reset_to_actual_domain_mirror">Скинути до актуального дзеркала домену</string>
+    <string name="update_available">Доступне оновлення</string>
+    <string name="update_available_text">Доступне оновлення (%s). Бажаєте оновити свій додаток?</string>
+    <string name="update">Оновити</string>
+    <string name="kinopoisk">Кінопошук</string>
+</resources>

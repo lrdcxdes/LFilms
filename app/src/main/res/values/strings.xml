@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name" translatable="false">LFilms</string>
+    <string name="search_label">Search</string>
+    <string name="home">Home</string>
+    <string name="favorites">Favorites</string>
+    <string name="history">History</string>
+    <string name="settings">Settings</string>
+    <string name="network_error_title">Network Error</string>
+    <string name="network_error_message">There is no internet connection. Please check your network settings and try again.</string>
+    <string name="retry">Retry</string>
+    <string name="no_movies_found">No movies found</string>
+    <string name="trailer">Trailer</string>
+    <string name="watch">Watch</string>
+    <string name="duration">Duration</string>
+    <string name="slogan">Slogan</string>
+    <string name="release_date">Release date</string>
+    <string name="countries">Countries</string>
+    <string name="directors">Directors</string>
+    <string name="genres">Genres</string>
+    <string name="from_series">From the series</string>
+    <string name="actors">Actors</string>
+    <string name="translation">Translation</string>
+    <string name="season">Season</string>
+    <string name="episode">Episode</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+    <string name="select_season">Select a season</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="select_episode">Select an episode</string>
+    <string name="select_translation">Select a Translation</string>
+    <string name="select_resolution">Please select a resolution</string>
+    <string name="theme">Theme</string>
+    <string name="select_theme">Select a theme</string>
+    <string name="domain_mirror">Domain mirror</string>
+    <string name="enter_domain_mirror">Enter a new domain mirror</string>
+    <string name="reset_to_actual_domain_mirror">Reset to actual domain mirror</string>
+    <string name="update_available">Update Available</string>
+    <string name="update_available_text">An update is available (%s). Do you want to update your app?</string>
+    <string name="update">Update</string>
+    <string name="imdb" translatable="false">IMDb</string>
+    <string name="kinopoisk">Kinopoisk</string>
+</resources>

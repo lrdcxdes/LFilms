@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_label">Поиск</string>
+    <string name="home">Главная</string>
+    <string name="favorites">Избранные</string>
+    <string name="history">История</string>
+    <string name="settings">Настройки</string>
+    <string name="network_error_title">Ошибка сети</string>
+    <string name="network_error_message">Отсутствует подключение к Интернету. Пожалуйста, проверьте настройки сети и повторите попытку.</string>
+    <string name="retry">Повторная попытка</string>
+    <string name="no_movies_found">Фильмы не найдены</string>
+    <string name="trailer">Трейлер</string>
+    <string name="watch">Смотреть</string>
+    <string name="duration">Длительность</string>
+    <string name="slogan">Слоган</string>
+    <string name="release_date">Дата выхода</string>
+    <string name="countries">Страны</string>
+    <string name="directors">Режиссеры</string>
+    <string name="genres">Жанры</string>
+    <string name="from_series">Из серии</string>
+    <string name="actors">Актёры</string>
+    <string name="translation">В переводе</string>
+    <string name="season">Сезон</string>
+    <string name="episode">Серия</string>
+    <string name="close">Закрыть</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="select_season">Выберите сезон</string>
+    <string name="dismiss">Отменить</string>
+    <string name="select_episode">Выберите серию</string>
+    <string name="select_translation">Выберите перевод</string>
+    <string name="select_resolution">Пожалуйста выберите разрешение</string>
+    <string name="theme">Тема</string>
+    <string name="select_theme">Выберите тему</string>
+    <string name="domain_mirror">Зеркало</string>
+    <string name="enter_domain_mirror">Введите новое зеркало домена</string>
+    <string name="reset_to_actual_domain_mirror">Сброс на актуальное зеркало домена</string>
+    <string name="update_available">Доступно обновление</string>
+    <string name="update_available_text">Доступно обновление (%s). Хотите ли вы обновить свое приложение?</string>
+    <string name="update">Обновить</string>
+    <string name="kinopoisk">Кинопоиск</string>
+</resources>
