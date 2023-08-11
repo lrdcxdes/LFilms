@@ -185,6 +185,7 @@ fun MovieScreen(
                             },
                             modifier = Modifier
                                 .padding(16.dp)
+                                .padding(top = 24.dp)
                                 .size(48.dp)
                                 .clip(CircleShape)
                                 .background(Color.Unspecified)
@@ -228,13 +229,6 @@ fun MovieScreen(
                                         ),
                                     )
                                 },
-                            loading = {
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .fillMaxSize(0.4f)
-                                        .align(Alignment.Center)
-                                )
-                            },
                             filterQuality = FilterQuality.Medium
                         )
 
@@ -248,13 +242,6 @@ fun MovieScreen(
                                 .align(Alignment.CenterStart)
                                 .padding(start = 24.dp, bottom = 24.dp)
                                 .clip(shape = RoundedCornerShape(16.dp)),
-                            loading = {
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .fillMaxSize(0.4f)
-                                        .align(Alignment.Center)
-                                )
-                            },
                             filterQuality = FilterQuality.Medium
                         )
 
@@ -286,7 +273,7 @@ fun MovieScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 24.dp, end = 16.dp, bottom = 16.dp),
+                                    .padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Column {
@@ -301,14 +288,11 @@ fun MovieScreen(
                                                 fontSize = 20.sp,
                                                 fontWeight = FontWeight.Bold
                                             ),
+                                            textAlign = TextAlign.Center,
                                             color = movie.ratingIMDB.getColor(),
                                             modifier = Modifier
                                                 .padding(start = 4.dp)
                                                 .clip(shape = RoundedCornerShape(4.dp))
-                                                .background(
-                                                    color = MaterialTheme.colorScheme.secondary,
-                                                    shape = RoundedCornerShape(4.dp)
-                                                )
                                                 .padding(horizontal = 4.dp)
                                         )
 
@@ -319,6 +303,7 @@ fun MovieScreen(
                                                 fontSize = 12.sp,
                                             ),
                                             color = Color.Gray,
+                                            textAlign = TextAlign.Center,
                                             modifier = Modifier.padding(start = 4.dp)
                                         )
                                     }
@@ -327,11 +312,15 @@ fun MovieScreen(
                                     Text(
                                         text = LocalContext.current.getString(R.string.imdb),
                                         style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 16.sp,
+                                            fontSize = 14.sp,
                                             fontWeight = FontWeight.SemiBold
                                         ),
                                         color = Color.Gray,
-                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                                        modifier = Modifier
+                                            .padding(start = 4.dp, top = 8.dp)
+                                            .align(
+                                                Alignment.CenterHorizontally
+                                            ),
                                         textAlign = TextAlign.Center,
                                     )
                                 }
@@ -349,14 +338,11 @@ fun MovieScreen(
                                                 fontSize = 20.sp,
                                                 fontWeight = FontWeight.Bold
                                             ),
+                                            textAlign = TextAlign.Center,
                                             color = movie.kinopoiskRating.getColor(),
                                             modifier = Modifier
                                                 .padding(start = 4.dp)
                                                 .clip(shape = RoundedCornerShape(4.dp))
-                                                .background(
-                                                    color = MaterialTheme.colorScheme.secondary,
-                                                    shape = RoundedCornerShape(4.dp)
-                                                )
                                                 .padding(horizontal = 4.dp)
                                         )
 
@@ -367,6 +353,7 @@ fun MovieScreen(
                                                 fontSize = 12.sp,
                                             ),
                                             color = Color.Gray,
+                                            textAlign = TextAlign.Center,
                                             modifier = Modifier.padding(start = 4.dp)
                                         )
                                     }
@@ -375,11 +362,15 @@ fun MovieScreen(
                                     Text(
                                         text = LocalContext.current.getString(R.string.kinopoisk),
                                         style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 16.sp,
+                                            fontSize = 14.sp,
                                             fontWeight = FontWeight.SemiBold
                                         ),
                                         color = Color.Gray,
-                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                                        modifier = Modifier
+                                            .padding(start = 4.dp, top = 8.dp)
+                                            .align(
+                                                Alignment.CenterHorizontally
+                                            ),
                                         textAlign = TextAlign.Center
                                     )
                                 }
@@ -397,6 +388,7 @@ fun MovieScreen(
                                                 fontWeight = FontWeight.Bold
                                             ),
                                             color = Color.White,
+                                            textAlign = TextAlign.Center,
                                             modifier = Modifier.padding(start = 4.dp)
                                         )
                                     }
@@ -405,11 +397,15 @@ fun MovieScreen(
                                     Text(
                                         text = LocalContext.current.getString(R.string.duration),
                                         style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 16.sp,
+                                            fontSize = 14.sp,
                                             fontWeight = FontWeight.SemiBold
                                         ),
                                         color = Color.Gray,
-                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                                        modifier = Modifier
+                                            .padding(start = 4.dp, top = 8.dp)
+                                            .align(
+                                                Alignment.CenterHorizontally
+                                            ),
                                         textAlign = TextAlign.Center
                                     )
                                 }
@@ -426,6 +422,7 @@ fun MovieScreen(
                                                 fontSize = 20.sp,
                                                 fontWeight = FontWeight.Bold
                                             ),
+                                            textAlign = TextAlign.Center,
                                             color = Color.White,
                                             modifier = Modifier.padding(start = 4.dp)
                                         )
@@ -435,11 +432,15 @@ fun MovieScreen(
                                     Text(
                                         text = LocalContext.current.getString(R.string.age),
                                         style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 16.sp,
+                                            fontSize = 14.sp,
                                             fontWeight = FontWeight.SemiBold
                                         ),
                                         color = Color.Gray,
-                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                                        modifier = Modifier
+                                            .padding(start = 4.dp, top = 8.dp)
+                                            .align(
+                                                Alignment.CenterHorizontally
+                                            ),
                                         textAlign = TextAlign.Center
                                     )
                                 }

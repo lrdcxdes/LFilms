@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -222,14 +220,33 @@ fun HomeScreen(
                     }
                 }
 
+                IconButton(
+                    onClick = {
+                        showSearchBar = !showSearchBar
+                    },
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(16.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = Color.Unspecified,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .size(24.dp)
+                    )
+                }
+
                 if (!showSearchBar) {
-                    // categories
+                    // categories center on the screen
                     LazyRow(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .wrapContentHeight(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         items(categories) { category ->
                             Text(
@@ -237,6 +254,7 @@ fun HomeScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
+                                    .padding(end = 16.dp)
                                     .clip(RoundedCornerShape(16.dp))
                                     .background(
                                         if (category == selectedCategory) {
@@ -254,27 +272,6 @@ fun HomeScreen(
                                     }
                                     .padding(8.dp)
                             )
-                        }
-                        item {
-                            // search button at the right top corner
-                            IconButton(
-                                onClick = {
-                                    showSearchBar = !showSearchBar
-                                },
-                                modifier = Modifier.wrapContentSize(),
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = Color.Unspecified,
-                                    contentColor = MaterialTheme.colorScheme.onPrimary
-                                ),
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_search),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                )
-                            }
                         }
                     }
                 }
