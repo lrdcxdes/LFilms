@@ -583,7 +583,7 @@ class Api {
 
     suspend fun setActualMirror() = suspendCoroutine { continuation ->
         val request = okhttp3.Request.Builder()
-            .url("https://raw.githubusercontent.com/lrdcxdes/hdrezka-mirror/main/mirror.txt")
+            .url("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/mirror.txt")
             .get()
             .build()
 
