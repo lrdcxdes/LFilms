@@ -42,11 +42,11 @@ suspend fun setHistory(
     translation: Int,
     context: Context
 ): List<MoviePreview> {
-    val historyMovies = getHistoryMoviesSet(context)
-
+    val historyMovies = getHistoryMoviesList(context)
     val historyPreview = historyMovies.find { m ->
         m.path == movie.path
     }
+    println("historyPreview: $historyPreview")
     val episodes = historyPreview?.episodesWatched ?: mutableSetOf()
 
     if (season != null && episode != null) {
@@ -64,7 +64,9 @@ suspend fun setHistory(
         episodes
     )
 
-    historyMovies.remove(historyPreview)
+    historyMovies.removeIf { m ->
+        m.path == movie.path
+    }
     historyMovies.add(newHistoryPreview)
 
     context.dataStore.edit { settings ->
@@ -74,18 +76,18 @@ suspend fun setHistory(
     return historyMovies.toMoviePreviewList()
 }
 
-suspend fun getHistoryMoviesSet(context: Context): MutableSet<HistoryPreview> {
+suspend fun getHistoryMoviesList(context: Context): MutableList<HistoryPreview> {
     val historyMoviesJsonSet = context.dataStore.data.map { preferences ->
         preferences[KEY_HISTORY] ?: mutableSetOf()
     }.first()
-    return historyMoviesJsonSet.toHistoryPreviewSet()
+    return historyMoviesJsonSet.toHistoryPreviewList()
 }
 
 suspend fun getHistoryMoviesPreview(context: Context): List<MoviePreview> {
     val historyMoviesJsonSet = context.dataStore.data.map { preferences ->
         preferences[KEY_HISTORY] ?: mutableSetOf()
     }.first()
-    return historyMoviesJsonSet.toHistoryPreviewSet().map { movie ->
+    return historyMoviesJsonSet.toHistoryPreviewList().map { movie ->
         movie.preview()
     }
 }
@@ -97,19 +99,19 @@ suspend fun getHistoryMovie(
     val historyMoviesJsonSet = context.dataStore.data.map { preferences ->
         preferences[KEY_HISTORY] ?: mutableSetOf()
     }.first()
-    return historyMoviesJsonSet.toHistoryPreviewSet().find { movie ->
+    return historyMoviesJsonSet.toHistoryPreviewList().find { movie ->
         movie.path == path
     }
 }
 
-fun Set<HistoryPreview>.toJsonSet(): Set<String> {
+fun List<HistoryPreview>.toJsonSet(): Set<String> {
     return this.map { Gson().toJson(it) }.toSet()
 }
 
-private fun Set<String>.toHistoryPreviewSet(): MutableSet<HistoryPreview> {
-    return this.map { Gson().fromJson(it, HistoryPreview::class.java) }.toMutableSet()
+private fun Set<String>.toHistoryPreviewList(): MutableList<HistoryPreview> {
+    return this.map { Gson().fromJson(it, HistoryPreview::class.java) }.toMutableList()
 }
 
-fun MutableSet<HistoryPreview>.toMoviePreviewList(): List<MoviePreview> {
+fun MutableList<HistoryPreview>.toMoviePreviewList(): List<MoviePreview> {
     return this.map { it.preview() }
 }
