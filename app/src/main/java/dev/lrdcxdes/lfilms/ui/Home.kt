@@ -1,18 +1,20 @@
 package dev.lrdcxdes.lfilms.ui
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -23,6 +25,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -53,6 +57,7 @@ import androidx.navigation.NavHostController
 import dev.lrdcxdes.lfilms.R
 import dev.lrdcxdes.lfilms.api.ApiError
 import dev.lrdcxdes.lfilms.api.MoviesList
+import dev.lrdcxdes.lfilms.helper.Category
 import dev.lrdcxdes.lfilms.helper.MovieCard
 import dev.lrdcxdes.lfilms.helper.NetworkError
 import dev.lrdcxdes.lfilms.helper.defaultList
@@ -75,6 +80,7 @@ fun HomeScreen(
     var textState by remember { mutableStateOf(TextFieldValue("")) }
     var hintsState by remember { mutableStateOf(emptyList<String>()) }
     var moviesList by remember { mutableStateOf(defaultMoviesList) }
+    var showSearchBar by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var networkError by remember { mutableStateOf(false) }
@@ -106,6 +112,13 @@ fun HomeScreen(
 
     val resources = LocalContext.current.resources
 
+    val categories = listOf(
+        Category("latest", resources.getString(R.string.latest)),
+        Category("watching", resources.getString(R.string.trending)),
+        Category("popular", resources.getString(R.string.popular))
+    )
+    var selectedCategory by remember { mutableStateOf(categories[1]) }
+
     Scaffold(
         bottomBar = { navBar() }
     ) { paddingValues ->
@@ -121,96 +134,149 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(16.dp)
-                        )
+                AnimatedVisibility(
+                    visible = showSearchBar,
+                    enter = slideInHorizontally(initialOffsetX = { it }),
+                    exit = slideOutHorizontally(targetOffsetX = { it })
                 ) {
-                    TextField(
-                        value = textState,
-                        onValueChange = { textState = it },
-                        label = {
-                            Text(
-                                resources.getString(R.string.search_label),
-                                style = MaterialTheme.typography.bodyMedium
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        TextField(
+                            value = textState,
+                            onValueChange = { textState = it },
+                            label = {
+                                Text(
+                                    resources.getString(R.string.search_label),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            },
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                disabledTextColor = MaterialTheme.colorScheme.onPrimary,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                cursorColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_search),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clickable(
+                                            onClick = {
+                                                focusManager.clearFocus()
+                                                keyboardController?.hide()
+                                                showSearchBar = false
+                                            }
+                                        )
+                                )
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Search
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+                                    focusManager.clearFocus()
+                                    keyboardController?.hide()
+                                    scope.launch {
+                                        updateMoviesList(textState.text)
+                                    }
+                                }
                             )
-                        },
-                        colors = TextFieldDefaults.colors(
-                            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                            disabledTextColor = MaterialTheme.colorScheme.onPrimary,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            cursorColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_search),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                        },
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Search
-                        ),
-                        keyboardActions = KeyboardActions(onSearch = {
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-                            hintsState = emptyList()
-                            scope.launch {
-                                updateMoviesList(textState.text)
+                        )
+                        if (hintsState.isNotEmpty()) {
+                            LazyRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp)
+                            ) {
+                                items(hintsState) { hint ->
+                                    Text(
+                                        text = hint,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .padding(end = 16.dp)
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(MaterialTheme.colorScheme.surface)
+                                            .clickable {
+                                                focusManager.clearFocus()
+                                                keyboardController?.hide()
+                                                scope.launch {
+                                                    updateMoviesList(hint)
+                                                }
+                                            }
+                                            .padding(8.dp)
+                                    )
+                                }
                             }
-                        }),
-                    )
+                        }
+                    }
                 }
 
-                // Show hints below the search bar
-                if (hintsState.isNotEmpty()) {
+                if (!showSearchBar) {
+                    // categories
                     LazyRow(
                         modifier = Modifier
+                            .fillMaxWidth()
                             .padding(16.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            .wrapContentHeight(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(hintsState) { hint ->
+                        items(categories) { category ->
                             Text(
-                                hint,
+                                text = category.text,
                                 style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(16.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
+                                    .background(
+                                        if (category == selectedCategory) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.surface
+                                        }
+                                    )
                                     .clickable {
-                                        focusManager.clearFocus()
-                                        keyboardController?.hide()
-                                        textState = TextFieldValue(hint)
-                                        hintsState = emptyList()
+                                        selectedCategory = category
                                         scope.launch {
-                                            try {
-                                                moviesList = performSearch(hint)
-                                                onSearchResult(moviesList)
-                                            } catch (e: ApiError) {
-                                                Log.e(
-                                                    "performSearch($hint)",
-                                                    "Network error: ${e.message}"
-                                                )
-                                                networkError = true
-                                            }
+                                            moviesList = defaultList(category = category.name)
+                                            onSearchResult(moviesList)
                                         }
                                     }
                                     .padding(8.dp)
                             )
                         }
+                        item {
+                            // search button at the right top corner
+                            IconButton(
+                                onClick = {
+                                    showSearchBar = !showSearchBar
+                                },
+                                modifier = Modifier.wrapContentSize(),
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = Color.Unspecified,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_search),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                )
+                            }
+                        }
                     }
-                } else {
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 // Filtered list of movies based on search query
@@ -231,7 +297,7 @@ fun HomeScreen(
                         LaunchedEffect(Unit) {
                             scope.launch {
                                 try {
-                                    moviesList = defaultList()
+                                    moviesList = defaultList(category = selectedCategory.name)
                                 } catch (e: ApiError) {
                                     Log.e("defaultList()", "Network error: ${e.message}")
                                     networkError = true
@@ -297,7 +363,7 @@ fun HomeScreen(
             networkError = false
             scope.launch {
                 try {
-                    moviesList = defaultList()
+                    moviesList = defaultList(category = selectedCategory.name)
                 } catch (e: ApiError) {
                     Log.e("defaultList()", "Network error: ${e.message}")
                     networkError = true

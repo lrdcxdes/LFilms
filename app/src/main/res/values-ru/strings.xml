@@ -38,4 +38,8 @@
     <string name="update_available_text">Доступно обновление (%s). Хотите ли вы обновить свое приложение?</string>
     <string name="update">Обновить</string>
     <string name="kinopoisk">Кинопоиск</string>
+    <string name="age">Возраст</string>
+    <string name="trending">Смотрят</string>
+    <string name="latest">Последние</string>
+    <string name="popular">Популярные</string>
 </resources>

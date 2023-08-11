@@ -115,7 +115,7 @@ fun MovieApp() {
         }
 
         defaultMoviesListState.value = try {
-            withContext(Dispatchers.IO) { defaultList() }
+            withContext(Dispatchers.IO) { defaultList(category = "watching") }
         } catch (e: ApiError) {
             Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             MoviesList(1, 1, emptyList())

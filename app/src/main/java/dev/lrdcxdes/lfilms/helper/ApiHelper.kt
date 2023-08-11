@@ -24,9 +24,11 @@ suspend fun performSearch(query: String, page: Int = 1): MoviesList {
     return searchResult
 }
 
+data class Category(val name: String, val text: String)
 
-suspend fun defaultList(page: Int = 1): MoviesList {
-    return api.watching(page)
+
+suspend fun defaultList(page: Int = 1, category: String): MoviesList {
+    return api.search(page = page, filter = category)
 }
 
 suspend fun loadNextPage(page: Int, query: String): MoviesList {

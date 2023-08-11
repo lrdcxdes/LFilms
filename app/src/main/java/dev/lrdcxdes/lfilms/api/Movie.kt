@@ -1,5 +1,7 @@
 package dev.lrdcxdes.lfilms.api
 
+import androidx.compose.ui.graphics.Color
+
 // extend int class
 class Votes(private val votes: Int) {
     override fun toString(): String {
@@ -11,6 +13,19 @@ class Votes(private val votes: Int) {
     }
 }
 
+class Rating(private val rating: Double) {
+    override fun toString(): String {
+        return rating.toString()
+    }
+
+    fun getColor(): Color {
+        // gradient from red to green by rating
+        val red = (255 * (1 - rating / 10)).toInt()
+        val green = (255 * (rating / 10)).toInt()
+        return Color(red, green, 0)
+    }
+}
+
 data class Movie(
     val id: Int,
     val path: String,
@@ -18,9 +33,9 @@ data class Movie(
     val originalTitle: String,
     val imageUrl: String,
     val previewImageUrl: String,
-    val ratingIMDB: Double,
+    val ratingIMDB: Rating,
     val votesIMDB: Votes,
-    val kinopoiskRating: Double,
+    val kinopoiskRating: Rating,
     val kinopoiskVotes: Votes,
     val slogan: String,
     val releaseDate: String,

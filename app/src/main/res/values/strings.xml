@@ -39,4 +39,8 @@
     <string name="update">Update</string>
     <string name="imdb" translatable="false">IMDb</string>
     <string name="kinopoisk">Kinopoisk</string>
+    <string name="age">Age</string>
+    <string name="trending">Trending</string>
+    <string name="latest">Latest</string>
+    <string name="popular">Popular</string>
 </resources>

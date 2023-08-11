@@ -58,12 +58,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -212,8 +214,19 @@ fun MovieScreen(
                                 .fillMaxSize()
                                 .background(Color.Black)
                                 .blur(24.dp)
-                                .graphicsLayer {
-                                    alpha = 0.7f
+                                // плавный градиент с картинки в чёрный цвет внизу
+                                .drawWithContent {
+                                    drawContent()
+                                    drawRect(
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color.Transparent,
+                                                Color.Black
+                                            ),
+                                            startY = size.height * 0.3f,
+                                            endY = size.height * 0.85f
+                                        ),
+                                    )
                                 },
                             loading = {
                                 CircularProgressIndicator(
@@ -273,12 +286,10 @@ fun MovieScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                                    .padding(start = 24.dp, end = 16.dp, bottom = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                // IMDB rating, Kinopoisk rating, duration, age limit
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
+                                Column {
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.Center
@@ -287,18 +298,25 @@ fun MovieScreen(
                                         Text(
                                             text = movie.ratingIMDB.toString(),
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 16.sp,
+                                                fontSize = 20.sp,
                                                 fontWeight = FontWeight.Bold
                                             ),
-                                            color = MaterialTheme.colorScheme.secondary,
-                                            modifier = Modifier.padding(start = 4.dp)
+                                            color = movie.ratingIMDB.getColor(),
+                                            modifier = Modifier
+                                                .padding(start = 4.dp)
+                                                .clip(shape = RoundedCornerShape(4.dp))
+                                                .background(
+                                                    color = MaterialTheme.colorScheme.secondary,
+                                                    shape = RoundedCornerShape(4.dp)
+                                                )
+                                                .padding(horizontal = 4.dp)
                                         )
 
                                         // votes
                                         Text(
                                             text = "(${movie.votesIMDB})",
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 8.sp,
+                                                fontSize = 12.sp,
                                             ),
                                             color = Color.Gray,
                                             modifier = Modifier.padding(start = 4.dp)
@@ -310,17 +328,16 @@ fun MovieScreen(
                                         text = LocalContext.current.getString(R.string.imdb),
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             fontSize = 16.sp,
-                                            fontWeight = FontWeight.Bold
+                                            fontWeight = FontWeight.SemiBold
                                         ),
                                         color = Color.Gray,
-                                        modifier = Modifier.padding(start = 4.dp)
+                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                                        textAlign = TextAlign.Center,
                                     )
                                 }
 
-                                // Kinopoisk rating
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
+                                Column {
+                                    // Kinopoisk rating
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.Center
@@ -329,18 +346,25 @@ fun MovieScreen(
                                         Text(
                                             text = movie.kinopoiskRating.toString(),
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 16.sp,
+                                                fontSize = 20.sp,
                                                 fontWeight = FontWeight.Bold
                                             ),
-                                            color = MaterialTheme.colorScheme.secondary,
-                                            modifier = Modifier.padding(start = 4.dp)
+                                            color = movie.kinopoiskRating.getColor(),
+                                            modifier = Modifier
+                                                .padding(start = 4.dp)
+                                                .clip(shape = RoundedCornerShape(4.dp))
+                                                .background(
+                                                    color = MaterialTheme.colorScheme.secondary,
+                                                    shape = RoundedCornerShape(4.dp)
+                                                )
+                                                .padding(horizontal = 4.dp)
                                         )
 
                                         // votes
                                         Text(
                                             text = "(${movie.kinopoiskVotes})",
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 8.sp,
+                                                fontSize = 12.sp,
                                             ),
                                             color = Color.Gray,
                                             modifier = Modifier.padding(start = 4.dp)
@@ -352,10 +376,71 @@ fun MovieScreen(
                                         text = LocalContext.current.getString(R.string.kinopoisk),
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             fontSize = 16.sp,
-                                            fontWeight = FontWeight.Bold
+                                            fontWeight = FontWeight.SemiBold
                                         ),
                                         color = Color.Gray,
-                                        modifier = Modifier.padding(start = 4.dp)
+                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+
+                                // Duration
+                                Column {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = movie.duration,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = Color.White,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+                                    }
+
+                                    // Duration text
+                                    Text(
+                                        text = LocalContext.current.getString(R.string.duration),
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        ),
+                                        color = Color.Gray,
+                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+
+                                // Age
+                                Column {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = movie.ageRating,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = Color.White,
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+                                    }
+
+                                    // Age text
+                                    Text(
+                                        text = LocalContext.current.getString(R.string.age),
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold
+                                        ),
+                                        color = Color.Gray,
+                                        modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+                                        textAlign = TextAlign.Center
                                     )
                                 }
                             }
@@ -488,34 +573,6 @@ fun MovieScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Movie Title
-                    Text(
-                        text = movie.title,
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            lineHeight = 20.sp
-                        ),
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                    )
-                    // Original Movie Title
-                    Text(
-                        text = movie.originalTitle,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Gray
-                        ),
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                    )
-
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Movie INFO

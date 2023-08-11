@@ -38,4 +38,8 @@
     <string name="update_available_text">Доступне оновлення (%s). Бажаєте оновити свій додаток?</string>
     <string name="update">Оновити</string>
     <string name="kinopoisk">Кінопошук</string>
+    <string name="age">Вік</string>
+    <string name="trending">Дивляться</string>
+    <string name="latest">Останні</string>
+    <string name="popular">Популярні</string>
 </resources>
