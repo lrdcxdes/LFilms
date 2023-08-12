@@ -58,9 +58,3 @@ jobs:
       - name: Get version
         run: |
           echo "VERSION_NAME=${{steps.android_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
-
-      - name: Upload APK Release
-        uses: actions/upload-artifact@v3
-        with:
-          name: "app/build/outputs/apk/release/app-release.apk"
-          path: "${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk"

@@ -93,8 +93,8 @@ private suspend fun checkForUpdates(
             var line: String?
             var actualVersion = ""
             while (reader.readLine().also { line = it } != null) {
-                if (line!!.contains("versionName")) {
-                    actualVersion = line!!.substringAfter("versionName \"").substringBefore("\"")
+                if (line!!.contains("val vName")) {
+                    actualVersion = line!!.substringAfter("val vName = \"").substringBefore("\"")
                     break
                 }
             }
