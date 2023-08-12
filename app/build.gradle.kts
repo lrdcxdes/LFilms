@@ -30,8 +30,7 @@ android {
 
         @TaskAction
         fun action() {
-            val versionName = versionName.get()
-            println(versionName)
+            println(versionName.get())
         }
     }
 

@@ -52,12 +52,12 @@ jobs:
 
       - name: Retrieve Version
         run: |
-          echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q printVersionName)"
+          echo "VERSION_NAME=$(${{github.workspace}}/gradlew -q printVersionName)" >> $GITHUB_ENV
 
       - name: Create release and upload apk
         uses: ncipollo/release-action@v1
         env:
-          VERSION_NAME: ${{ steps.retrieve_version.outputs.VERSION_NAME }}
+          VERSION_NAME: ${{ env.VERSION_NAME }}
         with:
           artifacts: /home/runner/work/LFilms/LFilms/app/build/outputs/apk/release/app-release.apk
           token: ${{ secrets.GITHUB_TOKEN }}
