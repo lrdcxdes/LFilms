@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
@@ -67,7 +68,8 @@ fun MovieCard(movie: MoviePreview, onClick: () -> Unit) {
                 contentDescription = null,
                 modifier = Modifier
                     .aspectRatio(IMAGE_ASPECT_RATIO)
-                    .fillMaxWidth()
+                    .width(200.dp) // Set a fixed width for the image
+                    .height(200.dp) // Set a fixed height for the image
                     .clip(shape = RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
@@ -88,9 +90,9 @@ fun MovieCard(movie: MoviePreview, onClick: () -> Unit) {
                 text = movie.name,
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    lineHeight = 20.sp
+                    lineHeight = 14.sp
                 ),
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
