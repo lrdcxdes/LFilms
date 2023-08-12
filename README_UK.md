@@ -1,5 +1,7 @@
 # Додаток LFilms [Без реклами]
 
+Мовні версії: [English](README.md) | [Русский](README_RU.md) | [Українська](README_UK.md)
+
 LFilms - це зручний мобільний додаток, який дозволяє стрімити та насолоджуватися широким спектром фільмів та телешоу. З сучасним та інтуїтивно зрозумілим інтерфейсом, LFilms надає незабутній досвід розваг у темних та світлих темах.
 
 [![Завантажити](https://www.fxmedicine.com.au/sites/default/files/photos/green%20download%20button.png)](https://github.com/lrdcxdes/LFilms/releases/latest/download/app-release.apk)
