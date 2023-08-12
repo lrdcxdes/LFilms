@@ -81,3 +81,15 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+
+abstract class VersionName : DefaultTask() {
+    @TaskAction
+    fun printVersionName() {
+        println(project.version)
+    }
+}
+
+task<VersionName>("printVersionName") {
+    group = "version"
+    description = "Prints the version name."
+}
