@@ -1,7 +1,10 @@
 package dev.lrdcxdes.lfilms.api
 
+import android.annotation.SuppressLint
 import android.util.Base64
 import android.util.Log
+import dev.lrdcxdes.lfilms.api.interceptors.DefaultInterceptor
+import dev.lrdcxdes.lfilms.api.interceptors.ErrorInterceptor
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -11,7 +14,12 @@ import org.json.JSONObject
 import org.jsoup.Jsoup
 import java.io.IOException
 import java.net.URI
+import java.security.cert.X509Certificate
 import java.util.Collections
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -33,41 +41,28 @@ class Api {
             " AppleWebKit/537.36 (KHTML, like Gecko)" +
             " Chrome/117.0.0.0 Safari/537.36"
 
+    @SuppressLint("CustomX509TrustManager", "TrustAllX509TrustManager")
+    private val trustAllCerts = arrayOf<TrustManager>(
+        object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> {
+                return arrayOf()
+            }
+        }
+    )
+
+    private var sslContext: SSLContext = SSLContext.getInstance("SSL").apply {
+        init(null, trustAllCerts, java.security.SecureRandom())
+    }
+
 
     private var client: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor { chain ->
-            val request = chain.request().newBuilder()
-                .addHeader("User-Agent", getUserAgent())
-                .addHeader("X-Requested-With", "XMLHttpRequest")
-                .url(
-                    chain.request().url.newBuilder()
-                        .host(getHost())
-                        .scheme(getScheme())
-                        .build()
-                )
-                .build()
-            val response = chain.proceed(request)
-            if (!response.isSuccessful) {
-                val errorTxt = "${chain.request().method} ${chain.request().url}\n" +
-                        "Response code: ${response.code}\n" +
-                        "Response body: ${response.body?.string()}"
-                if (response.body != null) {
-                    val body = response.body!!.string()
-                    val json: JSONObject
-                    try {
-                        json = JSONObject(body)
-                    } catch (e: Exception) {
-                        throw ApiError(errorTxt)
-                    }
-                    if (json.has("message")) {
-                        throw ApiError(json.getString("message"))
-                    }
-                } else {
-                    throw ApiError(errorTxt)
-                }
-            }
-            response
-        }
+        .callTimeout(7, TimeUnit.SECONDS)
+        .addInterceptor(DefaultInterceptor(userAgent, getHost(), getScheme()))
+        .addInterceptor(ErrorInterceptor())
+        .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
+        .hostnameVerifier { _, _ -> true }
         .build()
 
     fun setScheme(newProtocol: String) {
@@ -84,10 +79,6 @@ class Api {
 
     private fun getHost(): String {
         return host
-    }
-
-    private fun getUserAgent(): String {
-        return userAgent
     }
 
     fun getBaseUrl(): String {
