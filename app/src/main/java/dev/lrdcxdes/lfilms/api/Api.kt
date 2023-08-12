@@ -175,7 +175,7 @@ class Api {
                             val description =
                                 it.select("div.b-content__inline_item-link > div").text()
                             val link = it.select("div.b-content__inline_item-link > a").attr("href")
-                            val path = link.substringAfter(getBaseUrl())
+                            val path = link.substringAfter("://").substringAfter("/")
                             val imageUrl =
                                 it.select("div.b-content__inline_item-cover > a > img").attr("src")
                             MoviePreview(title, description, imageUrl, path)
