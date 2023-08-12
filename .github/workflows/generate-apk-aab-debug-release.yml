@@ -62,7 +62,7 @@ jobs:
       - name: Upload APK Release
         uses: actions/upload-artifact@v3
         with:
-          name: notification_tracker
+          name: LFilms v${{ env.VERSION_NAME }}
           path: app/build/outputs/apk/release/app-release.apk
 
       - name: Create release and upload apk
