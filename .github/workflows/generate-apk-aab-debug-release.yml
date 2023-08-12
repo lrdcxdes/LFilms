@@ -62,7 +62,5 @@ jobs:
       - name: Upload APK Release
         uses: actions/upload-artifact@v3
         with:
-          name: LFilms v${{ env.VERSION_NAME }}
-          path: app/build/outputs/apk/release/app-release.apk
-
-
+          name: app/build/outputs/apk/release/app-release.apk
+          path: ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk
