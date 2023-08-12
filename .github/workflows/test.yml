@@ -16,6 +16,18 @@ jobs:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '17'
           cache: 'gradle'
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Create google-sevices.json
+        run: cat /home/runner/work/${{ env.repository_name }}/${{ env.repository_name }}/google-services.json | base64
+
+      - name: Putting data
+        env:
+          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $DATA > /home/runner/work/${{ env.repository_name }}/${{ env.repository_name }}/google-services.json
+
       # Run Tests Build
       - name: Run gradle tests
         run: ./gradlew test
