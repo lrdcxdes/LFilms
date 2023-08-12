@@ -48,10 +48,6 @@ jobs:
       - name: Execute Gradle build
         run: ./gradlew build
 
-      # Create APK Release
-      - name: Build apk release project (APK) - app module
-        run: ./gradlew clean assembleRelease
-
       - name: Retrieve Version
         run: |
           echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q printVersionName)"
