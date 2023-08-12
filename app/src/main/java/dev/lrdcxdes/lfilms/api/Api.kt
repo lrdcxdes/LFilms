@@ -59,7 +59,7 @@ class Api {
 
 
     private var client: OkHttpClient = OkHttpClient.Builder()
-        .callTimeout(7, TimeUnit.SECONDS)
+        .callTimeout(15, TimeUnit.SECONDS)
         .addInterceptor(DefaultInterceptor(userAgent))
         .addInterceptor(ErrorInterceptor())
         .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
@@ -633,12 +633,9 @@ class Api {
 
     suspend fun setActualMirror(): String = suspendCoroutine { continuation ->
         val request = okhttp3.Request.Builder()
-            .url("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/mirror.txt")
             .get()
+            .url("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/mirror.txt")
             .build()
-
-        // new client for this call
-        val client = OkHttpClient.Builder().build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
