@@ -38,6 +38,14 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
+      - name: Create google-sevices.json
+        run: cat /home/runner/work/${{ env.repository_name }}/${{ env.repository_name }}/google-services.json | base64
+
+      - name: Putting data
+        env:
+          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $DATA > /home/runner/work/${{ env.repository_name }}/${{ env.repository_name }}/google-services.json
+
       # Run Tests Build
       - name: Run gradle tests
         run: ./gradlew test
@@ -47,7 +55,7 @@ jobs:
         run: ./gradlew build
 
       # Create APK Release
-      - name: Build apk release project (APK) - ${{ env.main_project_module }} module
+      - name: Build apk release project (APK) - app module
         run: ./gradlew assemble
 
       - name: Retrieve Version
