@@ -46,17 +46,15 @@ jobs:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $DATA > /home/runner/work/LFilms/LFilms/app/google-services.json
 
-      # Run Tests Build
-      - name: Run gradle tests
-        run: ./gradlew test
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-      # Run Build Project
-      - name: Build gradle project
+      - name: Execute Gradle build
         run: ./gradlew build
 
       # Create APK Release
       - name: Build apk release project (APK) - app module
-        run: ./gradlew assemble
+        run: ./gradlew assembleRelease
 
       - name: Retrieve Version
         run: |
