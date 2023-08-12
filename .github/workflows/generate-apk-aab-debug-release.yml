@@ -59,15 +59,17 @@ jobs:
 
       - name: Upload APK Release
         uses: actions/upload-artifact@v3
+        env:
+          VERSION: ${{ steps.android_version.outputs.VERSION_NAME }}
         with:
-          name: ${{ env.repository_name }}-v${{ env.version_name }}.apk
-          path: ${{ github.workspace }}/${{ env.main_project_module }}/build/outputs/apk/release/app-release.apk
+          name: ${{ env.repository_name }}-v${{ env.VERSION }}.apk
+          path: ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk
 
       - name: Create release and upload apk
         uses: underwindfall/create-release-with-debugapk@v2.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.version-step.outputs.version }}
+          VERSION: ${{ steps.android_version.outputs.VERSION_NAME }}
         with:
           tag_name: v${{ env.VERSION }}
           asset_path: app/build/outputs/apk/release/app-release.apk
