@@ -8,8 +8,10 @@ plugins {
 
 abstract class VersionName : DefaultTask() {
     @TaskAction
-    fun versionName() {
-        println("${project.version}")
+    fun printVersionName() {
+        // get versionname from app/build.gradle.kts
+        val versionName = project.findProperty("android.defaultConfig.versionName") as String
+        println(versionName)
     }
 }
 
