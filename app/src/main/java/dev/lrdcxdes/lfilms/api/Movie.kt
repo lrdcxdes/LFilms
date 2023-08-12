@@ -26,6 +26,75 @@ class Rating(private val rating: Double) {
     }
 }
 
+class ReleaseDate(private val releaseDate: String) {
+    private val enMonths = mapOf(
+        "января" to "January",
+        "февраля" to "February",
+        "марта" to "March",
+        "апреля" to "April",
+        "мая" to "May",
+        "июня" to "June",
+        "июля" to "July",
+        "августа" to "August",
+        "сентября" to "September",
+        "октября" to "October",
+        "ноября" to "November",
+        "декабря" to "December",
+    )
+
+    val uaMonths = mapOf(
+        "января" to "січня",
+        "февраля" to "лютого",
+        "марта" to "березня",
+        "апреля" to "квітня",
+        "мая" to "травня",
+        "июня" to "червня",
+        "июля" to "липня",
+        "августа" to "серпня",
+        "сентября" to "вересня",
+        "октября" to "жовтня",
+        "ноября" to "листопада",
+        "декабря" to "грудня",
+    )
+
+    private fun getUkrainianReleaseDate(): String {
+        val date = releaseDate.split(" ")
+        return "${date[0]} ${uaMonths[date[1]]} ${date[2]} року"
+    }
+
+    private fun getEnglishReleaseDate(): String {
+        val date = releaseDate.split(" ")
+        return "${enMonths[date[1]]} ${date[0]}, ${date[2]}"
+    }
+
+    fun toString(lang: String): String {
+        return when (lang) {
+            "uk" -> getUkrainianReleaseDate()
+            "en" -> getEnglishReleaseDate()
+            else -> releaseDate
+        }
+    }
+
+    override fun toString(): String {
+        return releaseDate
+    }
+}
+
+
+class Duration(private val duration: String) {
+    fun toString(lang: String): String {
+        return when (lang) {
+            "uk" -> duration.replace("мин.", "хв.")
+            "en" -> duration.replace("мин.", "min.")
+            else -> duration
+        }
+    }
+
+    override fun toString(): String {
+        return duration
+    }
+}
+
 data class Movie(
     val id: Int,
     val path: String,
@@ -38,12 +107,12 @@ data class Movie(
     val kinopoiskRating: Rating,
     val kinopoiskVotes: Votes,
     val slogan: String,
-    val releaseDate: String,
+    val releaseDate: ReleaseDate,
     val countries: List<String>,
     val directors: List<String>,
     val genres: List<String>,
     val ageRating: String,
-    val duration: String,
+    val duration: Duration,
     val series: List<String>,
     val actors: List<String>,
     val description: String,
@@ -53,7 +122,7 @@ data class Movie(
     val isRestricted: Boolean,
 ) {
     private fun getYear(): Int {
-        return releaseDate.split(" ")[2].toInt()
+        return releaseDate.toString().split(" ")[2].toInt()
     }
 
     fun getGenresString(): String {

@@ -253,7 +253,11 @@ fun MovieScreen(
                                 .align(Alignment.CenterEnd)
                         ) {
                             Text(
-                                text = movie.title,
+                                text = if (LocalContext.current.resources.configuration.locales[0].language == "ru") {
+                                    movie.title
+                                } else {
+                                    movie.originalTitle
+                                },
                                 style = MaterialTheme.typography.headlineMedium.copy(
                                     fontSize = 24.sp,
                                     fontWeight = FontWeight.Bold
@@ -261,7 +265,11 @@ fun MovieScreen(
                                 color = Color.White,
                             )
                             Text(
-                                text = movie.originalTitle,
+                                text = if (LocalContext.current.resources.configuration.locales[0].language == "ru") {
+                                    movie.originalTitle
+                                } else {
+                                    movie.title
+                                },
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.SemiBold
@@ -382,7 +390,7 @@ fun MovieScreen(
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         Text(
-                                            text = movie.duration,
+                                            text = movie.duration.toString(LocalContext.current.resources.configuration.locales[0].language),
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 fontSize = 20.sp,
                                                 fontWeight = FontWeight.Bold
@@ -571,9 +579,7 @@ fun MovieScreen(
                             }
                         }
                     }
-                }
 
-                item {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // Movie INFO
@@ -585,90 +591,6 @@ fun MovieScreen(
                             .wrapContentHeight()
                             .padding(bottom = 4.dp)
                     ) {
-                        // Movie Rating
-                        Row {
-                            Text(
-                                text = "${LocalContext.current.getString(R.string.imdb)}: ",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                ),
-                            )
-                            Text(
-                                text = movie.ratingIMDB.toString(),
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onSecondary
-                                ),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                                    .clip(shape = RoundedCornerShape(4.dp))
-                                    .background(
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
-                                    .padding(horizontal = 4.dp)
-                            )
-                            Text(
-                                text = "(" + movie.votesIMDB.toString() + ")",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = Color.Gray
-                                ),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                            )
-                            Text(
-                                text = "|",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = Color.Gray
-                                ),
-                                modifier = Modifier
-                                    .padding(start = 4.dp, end = 4.dp)
-                            )
-                            Text(
-                                text = "${LocalContext.current.getString(R.string.kinopoisk)}: ",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                ),
-                            )
-                            Text(
-                                text = movie.kinopoiskRating.toString(),
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onSecondary
-                                ),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                                    .clip(shape = RoundedCornerShape(4.dp))
-                                    .background(
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        shape = RoundedCornerShape(4.dp)
-                                    )
-                                    .padding(horizontal = 4.dp)
-                            )
-                            Text(
-                                text = "(" + movie.kinopoiskVotes.toString() + ")",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = Color.Gray
-                                ),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                            )
-                        }
-
-                        // Movie Duration
-                        Row {
-                            Text(
-                                text = "${LocalContext.current.getString(R.string.duration)}: ",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                ),
-                            )
-                            Text(
-                                text = movie.duration,
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = Color.Gray
-                                )
-                            )
-                        }
-
                         if (movie.slogan.isNotEmpty()) {
                             // Movie Slogan
                             Row {
@@ -696,7 +618,7 @@ fun MovieScreen(
                                 ),
                             )
                             Text(
-                                text = movie.releaseDate,
+                                text = movie.releaseDate.toString(LocalContext.current.resources.configuration.locales[0].language),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     color = Color.Gray
                                 )
