@@ -9,17 +9,35 @@ android {
     namespace = "dev.lrdcxdes.lfilms"
     compileSdk = 34
 
+    val vName = "1.2.9-hotfix06"
+
     defaultConfig {
         applicationId = "dev.lrdcxdes.lfilms"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
-        versionName = "1.2.9-hotfix06"
+        versionName = vName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    abstract class VersionName : DefaultTask() {
+        @get:Input
+        abstract val versionName: Property<String>
+
+        @TaskAction
+        fun action() {
+            val versionName = versionName.get()
+            val versionNameFile = File("${project.rootDir}/versionName.txt")
+            versionNameFile.writeText(versionName)
+        }
+    }
+
+    tasks.register<VersionName>("printVersionName") {
+        versionName.set(vName)
     }
 
     buildTypes {
@@ -80,16 +98,4 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-}
-
-abstract class VersionName : DefaultTask() {
-    @TaskAction
-    fun printVersionName() {
-        println(findProject("app")?.version)
-    }
-}
-
-task<VersionName>("printVersionName") {
-    group = "version"
-    description = "Prints the version name."
 }
