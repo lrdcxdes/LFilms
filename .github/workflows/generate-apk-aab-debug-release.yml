@@ -57,12 +57,10 @@ jobs:
 
       - name: Get version
         run: |
-          echo "version_name=${{steps.android_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
+          echo "VERSION_NAME=${{steps.android_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
 
       - name: Upload APK Release
         uses: actions/upload-artifact@v3
-        env:
-          VERSION: ${{ steps.android_version.outputs.VERSION_NAME }}
         with:
           name: ${{ env.repository_name }}-v${{ env.VERSION_NAME }}.apk
           path: ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk
@@ -75,6 +73,6 @@ jobs:
           tag: v${{ env.VERSION_NAME }}
           body: |
             [${{ github.event.head_commit.message }}](${{ github.event.head_commit.url }})
-          draft: false
+          draft: true
           prerelease: false
           allowUpdates: true
