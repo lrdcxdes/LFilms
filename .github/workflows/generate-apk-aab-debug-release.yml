@@ -70,9 +70,11 @@ jobs:
       - name: Create release and upload apk
         uses: ncipollo/release-action@v1
         with:
-          artifacts: app-release.apk
+          artifacts: ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v${{ env.VERSION_NAME }}
           body: |
             [${{ github.event.head_commit.message }}](${{ github.event.head_commit.url }})
           draft: false
           prerelease: false
+          allowUpdates: true
