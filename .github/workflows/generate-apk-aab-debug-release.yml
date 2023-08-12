@@ -70,7 +70,7 @@ jobs:
       - name: Create release and upload apk
         uses: underwindfall/create-release-with-debugapk@v2.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version-step.outputs.version }}
         with:
           tag_name: v${{ env.VERSION }}
