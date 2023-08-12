@@ -1,5 +1,7 @@
 # LFilms App [NO-ADS]
 
+Language Versions: [English](README.md) | [Русский](README_RU.md) | [Українська](README_UK.md)
+
 LFilms is a user-friendly mobile application that allows you to stream and enjoy a wide range of movies and TV shows. With a sleek and intuitive interface, LFilms provides a seamless entertainment experience in both Dark and Light themes.
 
 [![Download](https://www.fxmedicine.com.au/sites/default/files/photos/green%20download%20button.png)](https://github.com/lrdcxdes/LFilms/releases/latest/download/app-release.apk)
