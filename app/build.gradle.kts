@@ -85,7 +85,7 @@ dependencies {
 abstract class VersionName : DefaultTask() {
     @TaskAction
     fun printVersionName() {
-        println(project.version)
+        println(findProject("app")?.version)
     }
 }
 

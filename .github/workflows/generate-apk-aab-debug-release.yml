@@ -66,13 +66,11 @@ jobs:
           path: ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk
 
       - name: Create release and upload apk
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v${{ env.VERSION_NAME }}
-          body: |
-            [${{ github.event.head_commit.message }}](${{ github.event.head_commit.url }})
-          draft: true
-          prerelease: false
-          allowUpdates: true
+        uses: underwindfall/create-release-with-debugapk@v2.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            tag_name: v${{ env.VERSION_NAME }}
+            asset_path: app/build/outputs/apk/release/app-release.apk
+            asset_name: app-release.apk
+            asset_content_type: application/vnd.android.package-archive
