@@ -14,15 +14,9 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-
-      # Set Current Date As Env Variable
-      - name: Set current date as env variable
-        run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       # Set Repository Name As Env Variable
       - name: Set repository name as env variable
@@ -46,15 +40,17 @@ jobs:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo $DATA > /home/runner/work/LFilms/LFilms/app/google-services.json
 
+      # Setuup Gradle
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
+      # Execute Gradle build
       - name: Execute Gradle build
         run: ./gradlew build
 
       # Create APK Release
       - name: Build apk release project (APK) - app module
-        run: ./gradlew assembleRelease
+        run: ./gradlew clean assembleRelease
 
       - name: Retrieve Version
         run: |
@@ -65,12 +61,19 @@ jobs:
         run: |
           echo "version_name=${{steps.android_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Upload APK Release
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.repository_name }}-v${{ env.version_name }}.apk
+          path: ${{ github.workspace }}/${{ env.main_project_module }}/build/outputs/apk/release/${{ env.main_project_module }}-release.apk
+
+      - name: Create release and upload apk
+        uses: underwindfall/create-release-with-debugapk@v2.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
           VERSION: ${{ steps.version-step.outputs.version }}
         with:
           tag_name: v${{ env.VERSION }}
-          release_name: v${{ env.VERSION }}
+          asset_path: app/build/outputs/apk/release/app-release.apk
+          asset_name: app-release.apk
+          asset_content_type: application/vnd.android.package-archive
