@@ -1,11 +1,13 @@
-name: Kotlin CI
+name: Unit-test
 
 on:
   pull_request:
-    types: [ opened, reopened ]
+    branches:
+      - 'master'
 
 jobs:
-  build:
+  Unit-test:
+    name: Run unit tests on PR in master
     runs-on: ubuntu-latest
 
     steps:
@@ -31,5 +33,5 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Execute Gradle build
-        run: ./gradlew build
+      - name: Execute Gradle tests
+        run: ./gradlew test
