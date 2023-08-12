@@ -1,5 +1,7 @@
 # Приложение LFilms [БЕЗ РЕКЛАМЫ]
 
+Версии на других языках: [English](README.md) | [Русский](README_RU.md) | [Українська](README_UK.md)
+
 LFilms - это удобное мобильное приложение, которое позволяет стримить и наслаждаться широким спектром фильмов и телешоу. С современным и интуитивно понятным интерфейсом, LFilms предоставляет безупречный опыт развлечений в темных и светлых темах.
 
 [![Скачать](https://www.fxmedicine.com.au/sites/default/files/photos/green%20download%20button.png)](https://github.com/lrdcxdes/LFilms/releases/latest/download/app-release.apk)
