@@ -8,6 +8,7 @@ import dev.lrdcxdes.lfilms.api.interceptors.ErrorInterceptor
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.json.JSONObject
@@ -59,7 +60,7 @@ class Api {
 
     private var client: OkHttpClient = OkHttpClient.Builder()
         .callTimeout(7, TimeUnit.SECONDS)
-        .addInterceptor(DefaultInterceptor(userAgent, getHost(), getScheme()))
+        .addInterceptor(DefaultInterceptor(userAgent))
         .addInterceptor(ErrorInterceptor())
         .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
         .hostnameVerifier { _, _ -> true }
@@ -87,8 +88,16 @@ class Api {
 
     suspend fun searchAjax(query: String): List<SearchResultItem> =
         suspendCoroutine { continuation ->
+            val url = HttpUrl.Builder()
+                .scheme(getScheme())
+                .host(getHost())
+                .addPathSegment("engine")
+                .addPathSegment("ajax")
+                .addPathSegment("search.php")
+                .build()
+
             val request = okhttp3.Request.Builder()
-                .url(getBaseUrl() + "engine/ajax/search.php")
+                .url(url)
                 .post(FormBody.Builder().add("q", query).build())
                 .build()
             client.newCall(request).enqueue(object : Callback {
@@ -123,8 +132,25 @@ class Api {
 
     suspend fun search(query: String? = null, filter: String? = null, page: Int = 1): MoviesList =
         suspendCoroutine { continuation ->
+            var url = HttpUrl.Builder()
+                .scheme(getScheme())
+                .host(getHost())
+
+            if (filter != null) {
+                url = url.addPathSegment("page")
+                    .addPathSegment(page.toString())
+            } else if (query != null) {
+                url = url.addPathSegment("search")
+            }
+
+            url = url
+                .addQueryParameter("do", if (query != null) "search" else "")
+                .addQueryParameter("subaction", if (query != null) "search" else "")
+                .addQueryParameter("q", query ?: "")
+                .addQueryParameter("filter", filter ?: "")
+
             val request = okhttp3.Request.Builder()
-                .url(getBaseUrl() + (if (filter != null) "page/$page/?filter=$filter" else if (query != null) "search/?do=search&subaction=search&q=$query&page=$page" else ""))
+                .url(url.build())
                 .build()
 
             client.newCall(request).enqueue(object : Callback {
@@ -148,8 +174,8 @@ class Api {
                             val title = it.select("div.b-content__inline_item-link > a").text()
                             val description =
                                 it.select("div.b-content__inline_item-link > div").text()
-                            val url = it.select("div.b-content__inline_item-link > a").attr("href")
-                            val path = url.substringAfter(getBaseUrl())
+                            val link = it.select("div.b-content__inline_item-link > a").attr("href")
+                            val path = link.substringAfter(getBaseUrl())
                             val imageUrl =
                                 it.select("div.b-content__inline_item-cover > a > img").attr("src")
                             MoviePreview(title, description, imageUrl, path)
@@ -200,8 +226,14 @@ class Api {
     }
 
     suspend fun getMovie(path: String): Movie? = suspendCoroutine { continuation ->
+        val url = HttpUrl.Builder()
+            .scheme(getScheme())
+            .host(getHost())
+            .addPathSegments(path)
+            .build()
+
         val request = okhttp3.Request.Builder()
-            .url(getBaseUrl() + path)
+            .url(url)
             .build()
 
         client.newCall(request).enqueue(object : Callback {
@@ -343,8 +375,16 @@ class Api {
     }
 
     suspend fun getTrailer(movieId: Int): String? = suspendCoroutine { continuation ->
+        val url = HttpUrl.Builder()
+            .scheme(getScheme())
+            .host(getHost())
+            .addPathSegment("engine")
+            .addPathSegment("ajax")
+            .addPathSegment("gettrailervideo.php")
+            .build()
+
         val request = okhttp3.Request.Builder()
-            .url(getBaseUrl() + "engine/ajax/gettrailervideo.php")
+            .url(url)
             .post(
                 FormBody.Builder()
                     .add("id", movieId.toString())
@@ -388,8 +428,16 @@ class Api {
 
     suspend fun loadSeasonsForTranslation(movieId: Int, translationId: Int): List<Season> =
         suspendCoroutine { continuation ->
+            val url = HttpUrl.Builder()
+                .scheme(getScheme())
+                .host(getHost())
+                .addPathSegment("ajax")
+                .addPathSegment("get_cdn_series")
+                .addPathSegment("")
+                .build()
+
             val request = okhttp3.Request.Builder()
-                .url(getBaseUrl() + "ajax/get_cdn_series/")
+                .url(url)
                 .post(
                     FormBody.Builder()
                         .add("id", movieId.toString())
@@ -510,8 +558,17 @@ class Api {
             println("${form.build().name(i)}: ${form.build().value(i)}")
         }
 
+        val url = HttpUrl.Builder()
+            .scheme(getScheme())
+            .host(getHost())
+            .addPathSegment("ajax")
+            .addPathSegment("get_cdn_series")
+            .addPathSegment("")
+            .addQueryParameter("t", System.currentTimeMillis().toString())
+            .build()
+
         val request = okhttp3.Request.Builder()
-            .url(getBaseUrl() + "ajax/get_cdn_series/?t=" + System.currentTimeMillis())
+            .url(url)
             .post(
                 form.build()
             )
@@ -540,8 +597,8 @@ class Api {
 
                     println("loadResolutions: $json")
 
-                    val url = clearTrash(json.getString("url"))
-                    val arr = url.split(",")
+                    val link = clearTrash(json.getString("url"))
+                    val arr = link.split(",")
 
                     val subtitle = json.optString("subtitle", "")
                     if (subtitle.isEmpty() || subtitle.equals("false")) {
