@@ -31,8 +31,7 @@ android {
         @TaskAction
         fun action() {
             val versionName = versionName.get()
-            val versionNameFile = File("${project.rootDir}/versionName.txt")
-            versionNameFile.writeText(versionName)
+            println(versionName)
         }
     }
 

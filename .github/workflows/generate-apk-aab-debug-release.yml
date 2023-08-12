@@ -53,22 +53,13 @@ jobs:
       - name: Retrieve Version
         run: |
           echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q printVersionName)"
-        id: android_version
-
-      - name: Get version
-        run: |
-          echo "VERSION_NAME=${{steps.android_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
-
-      - name: Upload APK Release
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.repository_name }}-v${{ env.VERSION_NAME }}.apk
-          path: /home/runner/work/LFilms/LFilms/app/build/outputs/apk/release/app-release.apk
 
       - name: Create release and upload apk
         uses: ncipollo/release-action@v1
+        env:
+          VERSION_NAME: ${{ steps.retrieve_version.outputs.VERSION_NAME }}
         with:
-          artifacts: ${{ github.workspace }}/app/build/outputs/apk/release/app-release.apk
+          artifacts: /home/runner/work/LFilms/LFilms/app/build/outputs/apk/release/app-release.apk
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: v${{ env.VERSION_NAME }}
           body: |
