@@ -86,11 +86,18 @@ private suspend fun checkForUpdates(
 ) {
     withContext(Dispatchers.IO) {
         try {
-            val url = URL("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/version")
+            val url =
+                URL("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/app/build.gradle.kts")
             val connection = url.openConnection()
             val reader = BufferedReader(InputStreamReader(connection.getInputStream()))
-            val actualVersion = reader.readLine()?.trim() ?: ""
-            reader.close()
+            var line: String?
+            var actualVersion = ""
+            while (reader.readLine().also { line = it } != null) {
+                if (line!!.contains("versionName")) {
+                    actualVersion = line!!.substringAfter("versionName \"").substringBefore("\"")
+                    break
+                }
+            }
 
             withContext(Dispatchers.Main) {
                 if (actualVersion.isNotEmpty() && actualVersion != currentVersion) {
