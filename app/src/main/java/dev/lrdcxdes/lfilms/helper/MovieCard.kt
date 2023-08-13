@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -79,8 +78,7 @@ fun MovieCard(movie: MoviePreview, onClick: () -> Unit) {
                             .fillMaxSize(0.4f)
                             .align(Alignment.Center)
                     )
-                },
-                filterQuality = FilterQuality.Medium
+                }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
