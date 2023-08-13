@@ -256,7 +256,8 @@ class Api {
                     val imageUrl =
                         soup.select("div.b-post__infotable_left > div.b-sidecover > a").attr("href")
                     val previewImageUrl =
-                        soup.select("div.b-post__infotable_left > div.b-sidecover > a").attr("src")
+                        soup.select("div.b-post__infotable_left > div.b-sidecover > a > img")
+                            .attr("src")
                     val rating =
                         soup.select("span.b-post__info_rates.imdb > span").text().toDoubleOrNull()
                             ?: 0.0

@@ -5,11 +5,18 @@ import androidx.compose.ui.graphics.Color
 // extend int class
 class Votes(private val votes: Int) {
     override fun toString(): String {
-        return when {
-            votes < 1000 -> votes.toString()
-            votes % 1000 < 500 -> "${votes / 1000}k"
-            else -> "${votes / 1000 + 1}k"
+        val votesString = votes.toString()
+        return when (votesString.length) {
+            7 -> "${votesString[0]},${votesString[1]}M"
+            6 -> "${votesString[0]}${votesString[1]}${votesString[2]},${votesString[3]}K"
+            5 -> "${votesString[0]}${votesString[1]},${votesString[2]}K"
+            4 -> "${votesString[0]},${votesString[1]}K"
+            else -> votesString
         }
+    }
+
+    fun isNotNull(): Boolean {
+        return votes != 0
     }
 }
 
@@ -18,11 +25,32 @@ class Rating(private val rating: Double) {
         return rating.toString()
     }
 
+    fun isNotNull(): Boolean {
+        return rating != 0.0
+    }
+
+    private fun interpolateColor(startColor: Color, endColor: Color, ratio: Float): Color {
+        val r = startColor.red + ratio * (endColor.red - startColor.red)
+        val g = startColor.green + ratio * (endColor.green - startColor.green)
+        val b = startColor.blue + ratio * (endColor.blue - startColor.blue)
+        return Color(r, g, b, 1.0f)
+    }
+
     fun getColor(): Color {
-        // gradient from red to green by rating
-        val red = (255 * (1 - rating / 10)).toInt()
-        val green = (255 * (rating / 10)).toInt()
-        return Color(red, green, 0)
+        val minRating = 0.0
+        val maxRating = 10.0
+
+        val clampedRating = maxOf(minRating, minOf(rating, maxRating))
+        val ratio = clampedRating.toFloat() / maxRating.toFloat()
+
+        val red = Color(0.8f, 0.4f, 0.4f, 1.0f) // Slightly brighter red
+        val sandGold = Color(0.8f, 0.655f, 0.2f, 1.0f) // Brighter sand gold color
+        val green = Color(0.4f, 0.8f, 0.4f, 1.0f) // Slightly brighter green
+
+        return when {
+            ratio <= 0.5 -> interpolateColor(red, sandGold, ratio * 2)
+            else -> interpolateColor(sandGold, green, (ratio - 0.5f) * 2)
+        }
     }
 }
 
@@ -42,7 +70,7 @@ class ReleaseDate(private val releaseDate: String) {
         "декабря" to "December",
     )
 
-    val uaMonths = mapOf(
+    private val uaMonths = mapOf(
         "января" to "січня",
         "февраля" to "лютого",
         "марта" to "березня",
@@ -92,6 +120,10 @@ class Duration(private val duration: String) {
 
     override fun toString(): String {
         return duration
+    }
+
+    fun isNotNull(): Boolean {
+        return duration.isNotEmpty() && duration != "0 мин."
     }
 }
 

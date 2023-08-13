@@ -3,6 +3,7 @@ package dev.lrdcxdes.lfilms.ui
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -71,7 +73,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
-import coil.compose.SubcomposeAsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import dev.lrdcxdes.lfilms.R
 import dev.lrdcxdes.lfilms.api
@@ -169,7 +172,7 @@ fun MovieScreen(
         val movie = movieS.value!!
 
         // Fetch movie image URL from the 'movie' object
-        val imageUrl = movie.imageUrl
+        val imageUrl = movie.previewImageUrl
 
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -200,22 +203,28 @@ fun MovieScreen(
                             )
                         }
 
-                        val model = ImageRequest.Builder(LocalContext.current)
-                            .data(imageUrl)
-                            .placeholder(R.drawable.ic_placeholder)
-                            .size(498, 739)
-                            .crossfade(true)
-                            .build()
+                        val painter = rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(imageUrl)
+                                .placeholder(R.drawable.ic_placeholder)
+                                .size(498, 739)
+                                .crossfade(true)
+                                // Save to cache
+                                .memoryCachePolicy(CachePolicy.ENABLED)
+                                .diskCachePolicy(CachePolicy.ENABLED)
+                                .build(),
+                            contentScale = ContentScale.Crop,
+                            filterQuality = FilterQuality.Medium
+                        )
 
-                        SubcomposeAsyncImage(
-                            model = model,
+                        Image(
+                            painter = painter,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(Color.Black)
                                 .blur(24.dp)
-                                // плавный градиент с картинки в чёрный цвет внизу
                                 .drawWithContent {
                                     drawContent()
                                     drawRect(
@@ -228,12 +237,11 @@ fun MovieScreen(
                                             endY = size.height * 0.85f
                                         ),
                                     )
-                                },
-                            filterQuality = FilterQuality.Medium
+                                }
                         )
 
-                        SubcomposeAsyncImage(
-                            model = model,
+                        Image(
+                            painter = painter,
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -242,7 +250,6 @@ fun MovieScreen(
                                 .align(Alignment.CenterStart)
                                 .padding(start = 24.dp, bottom = 24.dp)
                                 .clip(shape = RoundedCornerShape(16.dp)),
-                            filterQuality = FilterQuality.Medium
                         )
 
                         // after image at the right, make movie.title, and under movie.title make originalTitle
@@ -250,8 +257,9 @@ fun MovieScreen(
                             modifier = Modifier
                                 .fillMaxWidth(0.55f)
                                 .padding(start = 18.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
-                                .align(Alignment.CenterEnd)
+                                .align(Alignment.CenterEnd),
                         ) {
+                            // make text at the bottom напротив картинки
                             Text(
                                 text = if (LocalContext.current.resources.configuration.locales[0].language == "ru") {
                                     movie.title
@@ -282,175 +290,196 @@ fun MovieScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                horizontalArrangement = Arrangement.Center,
                             ) {
-                                Column {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
+                                if (movie.ratingIMDB.isNotNull() && movie.votesIMDB.isNotNull()) {
+                                    Column(
+                                        modifier = Modifier.padding(end = 16.dp)
                                     ) {
-                                        // rating
-                                        Text(
-                                            text = movie.ratingIMDB.toString(),
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            textAlign = TextAlign.Center,
-                                            color = movie.ratingIMDB.getColor(),
-                                            modifier = Modifier
-                                                .padding(start = 4.dp)
-                                                .clip(shape = RoundedCornerShape(4.dp))
-                                                .padding(horizontal = 4.dp)
-                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            // rating
+                                            Text(
+                                                text = movie.ratingIMDB.toString(),
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                ),
+                                                textAlign = TextAlign.Center,
+                                                color = movie.ratingIMDB.getColor(),
+                                                modifier = Modifier
+                                                    .clip(shape = RoundedCornerShape(4.dp))
+                                            )
 
-                                        // votes
+                                            // votes
+                                            Text(
+                                                text = "(${movie.votesIMDB})",
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.SemiBold
+                                                ),
+                                                color = Color.Gray,
+                                                textAlign = TextAlign.Start,
+                                                modifier = Modifier
+                                                    .padding(start = 2.dp)
+                                                    .align(
+                                                        Alignment.Bottom
+                                                    )
+                                            )
+                                        }
+
+                                        // imdb text
                                         Text(
-                                            text = "(${movie.votesIMDB})",
+                                            text = LocalContext.current.getString(R.string.imdb),
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 12.sp,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.SemiBold
                                             ),
                                             color = Color.Gray,
+                                            modifier = Modifier
+                                                .padding(top = 8.dp)
+                                                .align(
+                                                    Alignment.CenterHorizontally
+                                                ),
                                             textAlign = TextAlign.Center,
-                                            modifier = Modifier.padding(start = 4.dp)
                                         )
                                     }
-
-                                    // imdb text
-                                    Text(
-                                        text = LocalContext.current.getString(R.string.imdb),
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.SemiBold
-                                        ),
-                                        color = Color.Gray,
-                                        modifier = Modifier
-                                            .padding(start = 4.dp, top = 8.dp)
-                                            .align(
-                                                Alignment.CenterHorizontally
-                                            ),
-                                        textAlign = TextAlign.Center,
-                                    )
                                 }
 
-                                Column {
-                                    // Kinopoisk rating
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
+                                if (movie.kinopoiskRating.isNotNull() && movie.kinopoiskVotes.isNotNull()) {
+                                    Column(
+                                        modifier = Modifier.padding(end = 16.dp)
                                     ) {
-                                        // rating
-                                        Text(
-                                            text = movie.kinopoiskRating.toString(),
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            textAlign = TextAlign.Center,
-                                            color = movie.kinopoiskRating.getColor(),
-                                            modifier = Modifier
-                                                .padding(start = 4.dp)
-                                                .clip(shape = RoundedCornerShape(4.dp))
-                                                .padding(horizontal = 4.dp)
-                                        )
+                                        // Kinopoisk rating
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            // rating
+                                            Text(
+                                                text = movie.kinopoiskRating.toString(),
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                ),
+                                                textAlign = TextAlign.Center,
+                                                color = movie.kinopoiskRating.getColor(),
+                                                modifier = Modifier
+                                                    .clip(shape = RoundedCornerShape(4.dp))
+                                            )
 
-                                        // votes
+                                            // votes
+                                            Text(
+                                                text = "(${movie.kinopoiskVotes})",
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontSize = 12.sp,
+                                                ),
+                                                color = Color.Gray,
+                                                textAlign = TextAlign.Center,
+                                                modifier = Modifier
+                                                    .padding(start = 2.dp)
+                                                    .align(
+                                                        Alignment.Bottom
+                                                    )
+                                            )
+                                        }
+
+                                        // kinopoisk text
                                         Text(
-                                            text = "(${movie.kinopoiskVotes})",
+                                            text = LocalContext.current.getString(R.string.kinopoisk),
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 12.sp,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.SemiBold
                                             ),
                                             color = Color.Gray,
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.padding(start = 4.dp)
+                                            modifier = Modifier
+                                                .padding(top = 8.dp)
+                                                .align(
+                                                    Alignment.CenterHorizontally
+                                                ),
+                                            textAlign = TextAlign.Center
                                         )
                                     }
-
-                                    // kinopoisk text
-                                    Text(
-                                        text = LocalContext.current.getString(R.string.kinopoisk),
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.SemiBold
-                                        ),
-                                        color = Color.Gray,
-                                        modifier = Modifier
-                                            .padding(start = 4.dp, top = 8.dp)
-                                            .align(
-                                                Alignment.CenterHorizontally
-                                            ),
-                                        textAlign = TextAlign.Center
-                                    )
                                 }
 
                                 // Duration
-                                Column {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
+                                if (movie.duration.isNotNull()) {
+                                    Column(
+                                        modifier = Modifier.padding(end = 16.dp)
                                     ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            Text(
+                                                text = movie.duration.toString(LocalContext.current.resources.configuration.locales[0].language),
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                ),
+                                                color = Color.White,
+                                                textAlign = TextAlign.Center,
+                                                // max width and if text is too long, it will be cut by ...
+                                                modifier = Modifier
+                                                    .widthIn(max = 100.dp)
+                                                    .clip(shape = RoundedCornerShape(4.dp))
+                                            )
+                                        }
+
+                                        // Duration text
                                         Text(
-                                            text = movie.duration.toString(LocalContext.current.resources.configuration.locales[0].language),
+                                            text = LocalContext.current.getString(R.string.duration),
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.SemiBold
                                             ),
-                                            color = Color.White,
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.padding(start = 4.dp)
+                                            color = Color.Gray,
+                                            modifier = Modifier
+                                                .padding(start = 4.dp, top = 8.dp)
+                                                .align(
+                                                    Alignment.CenterHorizontally
+                                                ),
+                                            textAlign = TextAlign.Center
                                         )
                                     }
-
-                                    // Duration text
-                                    Text(
-                                        text = LocalContext.current.getString(R.string.duration),
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.SemiBold
-                                        ),
-                                        color = Color.Gray,
-                                        modifier = Modifier
-                                            .padding(start = 4.dp, top = 8.dp)
-                                            .align(
-                                                Alignment.CenterHorizontally
-                                            ),
-                                        textAlign = TextAlign.Center
-                                    )
                                 }
 
-                                // Age
-                                Column {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
+                                if (movie.ageRating.isNotEmpty()) {
+                                    Column {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
+                                        ) {
+                                            Text(
+                                                text = movie.ageRating,
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontSize = 20.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                ),
+                                                textAlign = TextAlign.Center,
+                                                color = Color.White,
+                                                modifier = Modifier.padding(start = 4.dp)
+                                            )
+                                        }
+
+                                        // Age text
                                         Text(
-                                            text = movie.ageRating,
+                                            text = LocalContext.current.getString(R.string.age),
                                             style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontSize = 20.sp,
-                                                fontWeight = FontWeight.Bold
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.SemiBold
                                             ),
-                                            textAlign = TextAlign.Center,
-                                            color = Color.White,
-                                            modifier = Modifier.padding(start = 4.dp)
+                                            color = Color.Gray,
+                                            modifier = Modifier
+                                                .padding(start = 4.dp, top = 8.dp)
+                                                .align(
+                                                    Alignment.CenterHorizontally
+                                                ),
+                                            textAlign = TextAlign.Center
                                         )
                                     }
-
-                                    // Age text
-                                    Text(
-                                        text = LocalContext.current.getString(R.string.age),
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.SemiBold
-                                        ),
-                                        color = Color.Gray,
-                                        modifier = Modifier
-                                            .padding(start = 4.dp, top = 8.dp)
-                                            .align(
-                                                Alignment.CenterHorizontally
-                                            ),
-                                        textAlign = TextAlign.Center
-                                    )
                                 }
                             }
 
@@ -1490,14 +1519,15 @@ fun WatchBottomSheet(
                                     )
                                 )
 
-                                watchedEpisodes.value = watchedEpisodes.value.toMutableList().apply {
-                                    add(
-                                        EpisodeHistory(
-                                            episode = selectedEpisode.value!!.id,
-                                            season = selectedSeason.value!!.id
+                                watchedEpisodes.value =
+                                    watchedEpisodes.value.toMutableList().apply {
+                                        add(
+                                            EpisodeHistory(
+                                                episode = selectedEpisode.value!!.id,
+                                                season = selectedSeason.value!!.id
+                                            )
                                         )
-                                    )
-                                }
+                                    }
                             }
                             context.startActivity(intent)
                         },
