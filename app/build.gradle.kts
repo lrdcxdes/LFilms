@@ -9,7 +9,7 @@ android {
     namespace = "dev.lrdcxdes.lfilms"
     compileSdk = 34
 
-    val vName = "1.2.9-hotfix06"
+    val vName = "1.3.0"
 
     defaultConfig {
         applicationId = "dev.lrdcxdes.lfilms"

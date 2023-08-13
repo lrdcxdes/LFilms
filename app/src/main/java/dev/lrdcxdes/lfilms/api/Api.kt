@@ -82,10 +82,6 @@ class Api {
         return host
     }
 
-    fun getBaseUrl(): String {
-        return "$scheme://$host/"
-    }
-
     suspend fun searchAjax(query: String): List<SearchResultItem> =
         suspendCoroutine { continuation ->
             val url = HttpUrl.Builder()
@@ -551,11 +547,6 @@ class Api {
                 .add("is_ads", "0")
                 .add("is_director", "0")
                 .add("action", "get_movie")
-        }
-
-        println("loadResolutions: ${getBaseUrl() + "ajax/get_cdn_series/?t=" + System.currentTimeMillis()}")
-        for (i in 0 until form.build().size) {
-            println("${form.build().name(i)}: ${form.build().value(i)}")
         }
 
         val url = HttpUrl.Builder()

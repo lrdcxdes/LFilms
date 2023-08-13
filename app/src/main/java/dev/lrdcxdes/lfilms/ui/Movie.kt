@@ -906,7 +906,9 @@ fun WatchBottomSheetContentSerial(
 
         // Watch button
         Button(
-            onClick = { onWatchClicked() },
+            onClick = {
+                onWatchClicked()
+            },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary,
@@ -1487,6 +1489,15 @@ fun WatchBottomSheet(
                                         selectedTranslation.value!!.id, context
                                     )
                                 )
+
+                                watchedEpisodes.value = watchedEpisodes.value.toMutableList().apply {
+                                    add(
+                                        EpisodeHistory(
+                                            episode = selectedEpisode.value!!.id,
+                                            season = selectedSeason.value!!.id
+                                        )
+                                    )
+                                }
                             }
                             context.startActivity(intent)
                         },

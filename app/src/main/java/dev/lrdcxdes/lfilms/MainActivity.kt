@@ -230,7 +230,6 @@ fun MovieApp() {
                             }
                         },
                         onResetToActualMirror = {
-                            println("[2] Actual mirror: $actualMirror")
                             if (actualMirror == mirror) {
                                 Toast.makeText(
                                     context,
