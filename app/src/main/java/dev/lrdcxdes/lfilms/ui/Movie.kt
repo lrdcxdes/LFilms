@@ -259,7 +259,7 @@ fun MovieScreen(
                                 .padding(start = 18.dp, top = 12.dp, end = 24.dp, bottom = 12.dp)
                                 .align(Alignment.CenterEnd),
                         ) {
-                            // make text at the bottom напротив картинки
+                            // make text at the bottom of the image
                             Text(
                                 text = if (LocalContext.current.resources.configuration.locales[0].language == "ru") {
                                     movie.title
@@ -298,7 +298,9 @@ fun MovieScreen(
                                     ) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center
+                                            horizontalArrangement = Arrangement.Center,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterHorizontally)
                                         ) {
                                             // rating
                                             Text(
@@ -310,7 +312,10 @@ fun MovieScreen(
                                                 textAlign = TextAlign.Center,
                                                 color = movie.ratingIMDB.getColor(),
                                                 modifier = Modifier
-                                                    .clip(shape = RoundedCornerShape(4.dp))
+                                                    .clip(shape = RoundedCornerShape(4.dp)),
+                                                lineHeight = 20.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
 
                                             // votes
@@ -326,7 +331,10 @@ fun MovieScreen(
                                                     .padding(start = 2.dp)
                                                     .align(
                                                         Alignment.Bottom
-                                                    )
+                                                    ),
+                                                lineHeight = 20.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
                                         }
 
@@ -344,6 +352,9 @@ fun MovieScreen(
                                                     Alignment.CenterHorizontally
                                                 ),
                                             textAlign = TextAlign.Center,
+                                            lineHeight = 20.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }
@@ -355,7 +366,9 @@ fun MovieScreen(
                                         // Kinopoisk rating
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center
+                                            horizontalArrangement = Arrangement.Center,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterHorizontally)
                                         ) {
                                             // rating
                                             Text(
@@ -367,7 +380,10 @@ fun MovieScreen(
                                                 textAlign = TextAlign.Center,
                                                 color = movie.kinopoiskRating.getColor(),
                                                 modifier = Modifier
-                                                    .clip(shape = RoundedCornerShape(4.dp))
+                                                    .clip(shape = RoundedCornerShape(4.dp)),
+                                                lineHeight = 20.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
 
                                             // votes
@@ -382,7 +398,10 @@ fun MovieScreen(
                                                     .padding(start = 2.dp)
                                                     .align(
                                                         Alignment.Bottom
-                                                    )
+                                                    ),
+                                                lineHeight = 20.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
                                         }
 
@@ -399,7 +418,10 @@ fun MovieScreen(
                                                 .align(
                                                     Alignment.CenterHorizontally
                                                 ),
-                                            textAlign = TextAlign.Center
+                                            textAlign = TextAlign.Center,
+                                            lineHeight = 20.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }
@@ -411,7 +433,9 @@ fun MovieScreen(
                                     ) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center
+                                            horizontalArrangement = Arrangement.Center,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterHorizontally)
                                         ) {
                                             Text(
                                                 text = movie.duration.toString(LocalContext.current.resources.configuration.locales[0].language),
@@ -424,11 +448,13 @@ fun MovieScreen(
                                                 // max width and if text is too long, it will be cut by ...
                                                 modifier = Modifier
                                                     .widthIn(max = 100.dp)
-                                                    .clip(shape = RoundedCornerShape(4.dp))
+                                                    .clip(shape = RoundedCornerShape(4.dp)),
+                                                lineHeight = 20.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
                                         }
 
-                                        // Duration text
                                         Text(
                                             text = LocalContext.current.getString(R.string.duration),
                                             style = MaterialTheme.typography.bodyMedium.copy(
@@ -441,16 +467,23 @@ fun MovieScreen(
                                                 .align(
                                                     Alignment.CenterHorizontally
                                                 ),
-                                            textAlign = TextAlign.Center
+                                            textAlign = TextAlign.Center,
+                                            lineHeight = 20.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }
 
                                 if (movie.ageRating.isNotEmpty()) {
-                                    Column {
+                                    Column(
+                                        modifier = Modifier.padding(end = 16.dp)
+                                    ) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.Center
+                                            horizontalArrangement = Arrangement.Center,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterHorizontally)
                                         ) {
                                             Text(
                                                 text = movie.ageRating,
@@ -460,7 +493,10 @@ fun MovieScreen(
                                                 ),
                                                 textAlign = TextAlign.Center,
                                                 color = Color.White,
-                                                modifier = Modifier.padding(start = 4.dp)
+                                                modifier = Modifier.padding(start = 4.dp),
+                                                lineHeight = 20.sp,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
                                             )
                                         }
 
@@ -477,7 +513,10 @@ fun MovieScreen(
                                                 .align(
                                                     Alignment.CenterHorizontally
                                                 ),
-                                            textAlign = TextAlign.Center
+                                            textAlign = TextAlign.Center,
+                                            lineHeight = 20.sp,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }
