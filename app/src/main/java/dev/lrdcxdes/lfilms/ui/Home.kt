@@ -7,6 +7,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -78,6 +80,7 @@ fun HomeScreen(
     var textState by remember { mutableStateOf(TextFieldValue("")) }
     var hintsState by remember { mutableStateOf(emptyList<String>()) }
     var moviesList by remember { mutableStateOf(defaultMoviesList) }
+    var searchState by remember { mutableStateOf(false) }
     var showSearchBar by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -86,13 +89,23 @@ fun HomeScreen(
 
     // Внешняя функция для обновления списка фильмов по текстовому запросу
     suspend fun updateMoviesList(query: String) {
+        searchState = true
+
+        focusManager.clearFocus()
+        keyboardController?.hide()
+
         try {
             val newMoviesList = performSearch(query)
+
+            hintsState = emptyList()
+
             moviesList = newMoviesList
             onSearchResult(newMoviesList)
         } catch (e: ApiError) {
             Log.e("performSearch($query)", "Network error: ${e.message}")
             networkError = true
+        } finally {
+            searchState = false
         }
     }
 
@@ -145,7 +158,11 @@ fun HomeScreen(
                     ) {
                         TextField(
                             value = textState,
-                            onValueChange = { textState = it },
+                            onValueChange = {
+                                if (it.text != textState.text) {
+                                    textState = it
+                                }
+                            },
                             label = {
                                 Text(
                                     resources.getString(R.string.search_label),
@@ -182,8 +199,6 @@ fun HomeScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onSearch = {
-                                    focusManager.clearFocus()
-                                    keyboardController?.hide()
                                     scope.launch {
                                         updateMoviesList(textState.text)
                                     }
@@ -206,8 +221,6 @@ fun HomeScreen(
                                             .clip(RoundedCornerShape(16.dp))
                                             .background(MaterialTheme.colorScheme.surface)
                                             .clickable {
-                                                focusManager.clearFocus()
-                                                keyboardController?.hide()
                                                 scope.launch {
                                                     updateMoviesList(hint)
                                                 }
@@ -277,77 +290,90 @@ fun HomeScreen(
                     }
                 }
 
-                // Filtered list of movies based on search query
-                val filteredMovies =
-                    if (textState.text.isNotEmpty() && moviesList.movies.isNotEmpty()) {
-                        moviesList
-                    } else if (textState.text.isEmpty() && hintsState.isEmpty() && moviesList.movies.isEmpty()) {
-                        Text(
-                            text = LocalContext.current.getString(R.string.no_movies_found),
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(16.dp),
-                            textAlign = TextAlign.Center,
+                if (searchState) {
+                    // loading indicator
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(48.dp)
                         )
-                        MoviesList(1, 1, emptyList())
-                    } else if (textState.text.isEmpty() && hintsState.isEmpty() && moviesList.movies.isNotEmpty()) {
-                        moviesList
-                    } else {
-                        LaunchedEffect(Unit) {
-                            scope.launch {
-                                try {
-                                    moviesList = defaultList(category = selectedCategory.name)
-                                } catch (e: ApiError) {
-                                    Log.e("defaultList()", "Network error: ${e.message}")
-                                    networkError = true
-                                }
-                            }
-                        }
-
-                        MoviesList(1, 1, emptyList())
                     }
-
-                val gridState = rememberLazyGridState()
-
-                LaunchedEffect(gridState) {
-                    snapshotFlow { gridState.layoutInfo.visibleItemsInfo }
-                        .debounce(100) // Throttle collection to every 100 milliseconds
-                        .collect { visibleItems ->
-                            val lastVisibleItemIndex = visibleItems.lastOrNull()?.index ?: 0
-                            val totalItems = moviesList.movies.size
-                            if (lastVisibleItemIndex >= totalItems - 1) {
-                                // Load the next page if the last visible item is at the end of the list
-                                if (moviesList.page < moviesList.maxPage) {
-                                    // Load the next page of movies
-                                    val nextPage = moviesList.page + 1
+                } else {
+                    // Filtered list of movies based on search query
+                    val filteredMovies =
+                        if (textState.text.isNotEmpty() && moviesList.movies.isNotEmpty()) {
+                            moviesList
+                        } else if (textState.text.isEmpty() && hintsState.isEmpty() && moviesList.movies.isEmpty()) {
+                            Text(
+                                text = LocalContext.current.getString(R.string.no_movies_found),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(16.dp),
+                                textAlign = TextAlign.Center,
+                            )
+                            MoviesList(1, 1, emptyList())
+                        } else if (textState.text.isEmpty() && hintsState.isEmpty() && moviesList.movies.isNotEmpty()) {
+                            moviesList
+                        } else {
+                            LaunchedEffect(Unit) {
+                                scope.launch {
                                     try {
-                                        val nextPageMovies =
-                                            loadNextPage(nextPage, textState.text)
-                                        moviesList = moviesList.copy(
-                                            page = nextPage,
-                                            movies = moviesList.movies + nextPageMovies.movies
-                                        )
+                                        moviesList = defaultList(category = selectedCategory.name)
                                     } catch (e: ApiError) {
-                                        Log.e(
-                                            "loadNextPage($nextPage, ${textState.text})",
-                                            "Network error: ${e.message}"
-                                        )
+                                        Log.e("defaultList()", "Network error: ${e.message}")
                                         networkError = true
                                     }
                                 }
                             }
-                        }
-                }
 
-                LazyVerticalGrid(
-                    state = gridState,
-                    columns = GridCells.Adaptive(128.dp),
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                    items(filteredMovies.movies) { movie ->
-                        MovieCard(movie = movie) {
-                            val encodedPath = encodePath(movie.path)
-                            navController.navigate("movie/$encodedPath")
+                            MoviesList(1, 1, emptyList())
+                        }
+
+                    val gridState = rememberLazyGridState()
+
+                    LaunchedEffect(gridState) {
+                        snapshotFlow { gridState.layoutInfo.visibleItemsInfo }
+                            .debounce(100) // Throttle collection to every 100 milliseconds
+                            .collect { visibleItems ->
+                                val lastVisibleItemIndex = visibleItems.lastOrNull()?.index ?: 0
+                                val totalItems = moviesList.movies.size
+                                if (lastVisibleItemIndex >= totalItems - 1) {
+                                    // Load the next page if the last visible item is at the end of the list
+                                    if (moviesList.page < moviesList.maxPage) {
+                                        // Load the next page of movies
+                                        val nextPage = moviesList.page + 1
+                                        try {
+                                            val nextPageMovies =
+                                                loadNextPage(nextPage, textState.text)
+                                            moviesList = moviesList.copy(
+                                                page = nextPage,
+                                                movies = moviesList.movies + nextPageMovies.movies
+                                            )
+                                        } catch (e: ApiError) {
+                                            Log.e(
+                                                "loadNextPage($nextPage, ${textState.text})",
+                                                "Network error: ${e.message}"
+                                            )
+                                            networkError = true
+                                        }
+                                    }
+                                }
+                            }
+                    }
+
+                    LazyVerticalGrid(
+                        state = gridState,
+                        columns = GridCells.Adaptive(128.dp),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp)
+                    ) {
+                        items(filteredMovies.movies) { movie ->
+                            MovieCard(movie = movie) {
+                                val encodedPath = encodePath(movie.path)
+                                navController.navigate("movie/$encodedPath")
+                            }
                         }
                     }
                 }

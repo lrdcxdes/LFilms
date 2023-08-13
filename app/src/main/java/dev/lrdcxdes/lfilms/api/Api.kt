@@ -139,11 +139,13 @@ class Api {
                 url = url.addPathSegment("search")
             }
 
-            url = url
-                .addQueryParameter("do", if (query != null) "search" else "")
-                .addQueryParameter("subaction", if (query != null) "search" else "")
-                .addQueryParameter("q", query ?: "")
-                .addQueryParameter("filter", filter ?: "")
+            if (query != null) {
+                url = url.addQueryParameter("do", "search")
+                    .addQueryParameter("subaction", "search")
+                    .addQueryParameter("q", query)
+            } else if (filter != null) {
+                url = url.addQueryParameter("filter", filter)
+            }
 
             val request = okhttp3.Request.Builder()
                 .url(url.build())
