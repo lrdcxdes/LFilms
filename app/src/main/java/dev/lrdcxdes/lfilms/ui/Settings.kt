@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import dev.lrdcxdes.lfilms.R
 import dev.lrdcxdes.lfilms.Theme
+import dev.lrdcxdes.lfilms.helper.checkForUpdates
+import dev.lrdcxdes.lfilms.helper.downloadAndInstallApk
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
@@ -83,6 +87,16 @@ fun SettingsScreen(
                     )
                 }
                 item {
+                    // update check
+                    CheckUpdateItem(
+                        context = context,
+                        currentVersion = context.packageManager.getPackageInfo(
+                            context.packageName,
+                            0
+                        ).versionName
+                    )
+                }
+                item {
                     // github link
                     SettingItem(
                         icon = ImageVector.vectorResource(R.drawable.ic_github),
@@ -90,7 +104,9 @@ fun SettingsScreen(
                         modifier = Modifier.clickable {
                             val intent = Intent(Intent.ACTION_VIEW)
                             intent.data = Uri.parse("https://github.com/lrdcxdes/LFilms")
-                            context.startActivity(intent)
+                            if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                            }
                         },
                     )
                 }
@@ -262,6 +278,78 @@ fun DomainMirrorSettingItem(
                             text = LocalContext.current.resources.getString(R.string.reset_to_actual_domain_mirror)
                         )
                     }
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text(LocalContext.current.resources.getString(R.string.dismiss))
+                }
+            }
+        )
+    }
+}
+
+
+@Composable
+fun CheckUpdateItem(
+    context: Context,
+    currentVersion: String
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    var newVersion by remember { mutableStateOf(currentVersion) }
+    val scope = rememberCoroutineScope()
+
+    SettingItem(
+        icon = Icons.Default.Edit,
+        label = LocalContext.current.resources.getString(R.string.check_update),
+        modifier = Modifier.clickable {
+            showDialog = true
+        }
+    )
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        scope.launch {
+                            checkForUpdates(newVersion) { version ->
+                                newVersion = version
+                                scope.launch {
+                                    downloadAndInstallApk(context, version)
+                                }
+                            }
+                        }
+                    },
+                ) {
+                    Text(LocalContext.current.resources.getString(R.string.update))
+                }
+            },
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            title = {
+                Text(
+                    text = LocalContext.current.resources.getString(R.string.check_update)
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = LocalContext.current.resources.getString(R.string.current_version) + ": " + currentVersion,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                    Text(
+                        text = LocalContext.current.resources.getString(R.string.latest_version) + ": " + newVersion,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                 }
             },
             dismissButton = {

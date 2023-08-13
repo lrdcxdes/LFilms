@@ -9,7 +9,7 @@ android {
     namespace = "dev.lrdcxdes.lfilms"
     compileSdk = 34
 
-    val vName = "1.3.1-hotfix02"
+    val vName = "1.3.2"
 
     defaultConfig {
         applicationId = "dev.lrdcxdes.lfilms"
@@ -88,6 +88,7 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-messaging")
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

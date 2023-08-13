@@ -42,4 +42,7 @@
     <string name="trending">Смотрят</string>
     <string name="latest">Последние</string>
     <string name="popular">Популярные</string>
+    <string name="check_update">Проверить обновления</string>
+    <string name="current_version">Текущая версия</string>
+    <string name="latest_version">Последняя версия</string>
 </resources>

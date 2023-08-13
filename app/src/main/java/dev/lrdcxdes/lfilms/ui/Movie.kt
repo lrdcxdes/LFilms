@@ -95,29 +95,6 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-private fun fetchTrailerUrl(movie: Movie?): String {
-    val scope = rememberCoroutineScope()
-    val state = remember { mutableStateOf("") }
-
-    // Fetch trailer URL asynchronously
-    LaunchedEffect(movie) {
-        if (movie != null) {
-            scope.launch {
-                try {
-                    val url = api.getTrailer(movie.id) ?: ""
-                    state.value = url
-                } catch (e: Exception) {
-                    state.value = ""
-                }
-            }
-        }
-    }
-
-    return state.value
-}
-
-
-@Composable
 fun MovieScreen(
     navController: NavHostController,
     path: String,
@@ -137,7 +114,7 @@ fun MovieScreen(
 
     val movieS = remember { mutableStateOf<Movie?>(null) }
 
-    val trailerUrl = fetchTrailerUrl(movieS.value)
+    val trailerUrl = remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
 
@@ -170,6 +147,18 @@ fun MovieScreen(
         }
     } else {
         val movie = movieS.value!!
+
+        LaunchedEffect(movie) {
+            scope.launch {
+                try {
+                    val url = api.getTrailer(movie.id) ?: ""
+                    trailerUrl.value = url
+                } catch (e: ApiError) {
+                    trailerUrl.value = ""
+                    Toast.makeText(context, "Failed to load trailer", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
         // Fetch movie image URL from the 'movie' object
         val imageUrl = movie.previewImageUrl
@@ -532,7 +521,7 @@ fun MovieScreen(
                                     onClick = {
                                         val intent = Intent(
                                             Intent.ACTION_VIEW,
-                                            Uri.parse(trailerUrl)
+                                            Uri.parse(trailerUrl.value)
                                         )
                                         context.startActivity(intent)
                                     },
@@ -545,7 +534,7 @@ fun MovieScreen(
                                         modifier = Modifier.fillMaxWidth(),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        if (trailerUrl != "") {
+                                        if (trailerUrl.value != "") {
                                             Row(
                                                 verticalAlignment = Alignment.CenterVertically,
                                                 horizontalArrangement = Arrangement.Center
@@ -821,17 +810,23 @@ fun WatchBottomSheetContentSerial(
 
     val scope = rememberCoroutineScope()
 
+    val context = LocalContext.current
+
     // Function to load resolutions for the current translation, season, and episode
     suspend fun loadResolutions() {
         // Implement the API call to load resolutions for the selected translation, season, and episode
         // For example:
         scope.launch {
-            resolutions = api.loadResolutions(
-                movie.id,
-                selectedTranslation.id,
-                selectedSeason?.id ?: 1,
-                selectedEpisode?.id ?: 1
-            )
+            try {
+                resolutions = api.loadResolutions(
+                    movie.id,
+                    selectedTranslation.id,
+                    selectedSeason?.id ?: 1,
+                    selectedEpisode?.id ?: 1
+                )
+            } catch (e: ApiError) {
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+            }
 
             // Once the resolutions are loaded, update the selectedResolution state with the first resolution (if any)
             if (resolutions.isNotEmpty()) {
@@ -846,7 +841,11 @@ fun WatchBottomSheetContentSerial(
             onSeasonSelected(it)
         }
         scope.launch {
-            seasons = api.loadSeasonsForTranslation(movie.id, selectedTranslation.id)
+            try {
+                seasons = api.loadSeasonsForTranslation(movie.id, selectedTranslation.id)
+            } catch (e: ApiError) {
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -1221,16 +1220,22 @@ fun WatchBottomSheetContent(
 
     var resolutions by remember { mutableStateOf(listOf<Stream>()) }
 
+    val context = LocalContext.current
+
     // Function to load resolutions for the current translation, season, and episode
     suspend fun loadResolutions() {
         // Implement the API call to load resolutions for the selected translation, season, and episode
         // For example:
-        resolutions = api.loadResolutions(
-            movie.id,
-            selectedTranslation.id,
-            null,
-            null
-        )
+        try {
+            resolutions = api.loadResolutions(
+                movie.id,
+                selectedTranslation.id,
+                null,
+                null
+            )
+        } catch (e: ApiError) {
+            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+        }
 
         // Once the resolutions are loaded, update the selectedResolution state with the first resolution (if any)
         if (resolutions.isNotEmpty()) {
@@ -1417,7 +1422,12 @@ fun WatchBottomSheet(
             selectedSeason.value = null // Reset selected season when translation changes
             // Load episodes for the first season of the selected translation
             return scope.launch {
-                seasons.value = api.loadSeasonsForTranslation(movie.id, translation.id)
+                seasons.value = try {
+                    api.loadSeasonsForTranslation(movie.id, translation.id)
+                } catch (e: ApiError) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                    emptyList()
+                }
                 if (seasons.value.isNotEmpty()) {
                     selectedSeason.value = seasons.value.first()
                     if (selectedSeason.value!!.episodes.isNotEmpty()) {
@@ -1568,7 +1578,13 @@ fun WatchBottomSheet(
                                         )
                                     }
                             }
-                            context.startActivity(intent)
+                            // if has activity
+                            if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                            } else {
+                                // https://github.com/anilbeesetti/nextplayer/releases/latest
+
+                            }
                         },
                         selectedResolution = selectedResolution.value,
                         onResolutionSelected = { resolution ->
@@ -1665,7 +1681,12 @@ fun WatchBottomSheet(
                                     )
                                 }
                             }
-                            context.startActivity(intent)
+
+                            if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                            } else {
+                                //
+                            }
                         },
                         selectedResolution = selectedResolution.value,
                         onResolutionSelected = { resolution ->

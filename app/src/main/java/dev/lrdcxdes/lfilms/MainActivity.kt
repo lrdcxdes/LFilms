@@ -137,14 +137,14 @@ fun MovieApp() {
     }
 
     LFilmsTheme(theme = currentTheme.value, dynamicColor = false) {
+        AutoUpdate()
+
         if (defaultMoviesListState.value == null || mirror.isEmpty()) {
             CircularProgressIndicator(
                 modifier = Modifier.size(48.dp),
                 color = MaterialTheme.colorScheme.secondary,
             )
         } else {
-            AutoUpdate()
-
             NavHost(navController, startDestination = "home") {
                 composable("home") {
                     val moviesList =
@@ -258,7 +258,7 @@ fun MovieApp() {
                             }
 
                             return@SettingsScreen actualMirror
-                        }
+                        },
                     )
                 }
                 composable(

@@ -42,4 +42,7 @@
     <string name="trending">Дивляться</string>
     <string name="latest">Останні</string>
     <string name="popular">Популярні</string>
+    <string name="check_update">Перевірити оновлення</string>
+    <string name="current_version">Поточна версія</string>
+    <string name="latest_version">Остання версія</string>
 </resources>
