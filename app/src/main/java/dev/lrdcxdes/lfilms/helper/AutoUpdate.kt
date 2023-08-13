@@ -18,16 +18,12 @@ import dev.lrdcxdes.lfilms.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
+import okhttp3.OkHttpClient
 import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
 
 
 @Composable
-fun AutoUpdate() {
+fun AutoUpdate(client: OkHttpClient) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
     var actualVersion by remember { mutableStateOf("") }
@@ -37,7 +33,7 @@ fun AutoUpdate() {
 
     // Check for updates on initialization
     LaunchedEffect(Unit) {
-        checkForUpdates(currentVersion) { version ->
+        checkForUpdates(currentVersion, client) { version ->
             actualVersion = version
             showDialog = true
         }
@@ -58,7 +54,7 @@ fun AutoUpdate() {
             confirmButton = {
                 Button(onClick = {
                     scope.launch {
-                        downloadAndInstallApk(context, actualVersion)
+                        downloadAndInstallApk(context, actualVersion, client)
                     }
                     showDialog = false
                 }) {
@@ -73,22 +69,18 @@ fun AutoUpdate() {
     }
 }
 
-private suspend fun downloadApk(url: String, outputFile: File) {
+private suspend fun downloadApk(url: String, outputFile: File, client: OkHttpClient) {
     withContext(Dispatchers.IO) {
-        val connection = URL(url).openConnection() as HttpURLConnection
-        connection.connect()
+        val request = okhttp3.Request.Builder().url(url).build()
+        val response = client.newCall(request).execute()
+        val inputStream = response.body?.byteStream()
+        val outputStream = outputFile.outputStream()
 
-        val inputStream = connection.inputStream
-        val outputStream = FileOutputStream(outputFile)
-
-        val buffer = ByteArray(4096)
-        var bytesRead: Int
-        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-            outputStream.write(buffer, 0, bytesRead)
+        inputStream?.use { input ->
+            outputStream.use { output ->
+                input.copyTo(output)
+            }
         }
-
-        outputStream.close()
-        inputStream.close()
     }
 }
 
@@ -112,14 +104,14 @@ private fun getApkFile(context: Context, version: String): File {
 }
 
 suspend fun downloadAndInstallApk(
-    context: Context, version: String
+    context: Context, version: String, client: OkHttpClient
 ) {
     val url = "https://github.com/lrdcxdes/LFilms/releases/latest/download/app-release.apk"
     val apkFile = getApkFile(context, version)
 
     try {
         if (!apkFile.exists()) {
-            downloadApk(url, apkFile)
+            downloadApk(url, apkFile, client)
         }
         installApk(context, apkFile)
     } catch (e: Exception) {
@@ -129,21 +121,22 @@ suspend fun downloadAndInstallApk(
 
 
 suspend fun checkForUpdates(
-    currentVersion: String, onUpdateAvailable: (String) -> Unit
+    currentVersion: String, client: OkHttpClient, onUpdateAvailable: (String) -> Unit
 ) {
     withContext(Dispatchers.IO) {
         try {
-            val url =
-                URL("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/app/build.gradle.kts")
-            val connection = url.openConnection()
-            val reader = BufferedReader(InputStreamReader(connection.getInputStream()))
-            var line: String?
-            var actualVersion = ""
+            val request = okhttp3.Request.Builder()
+                .url("https://raw.githubusercontent.com/lrdcxdes/LFilms/master/app/build.gradle.kts")
+                .build()
+            val response = client.newCall(request).execute()
+            val body = response.body?.string()
 
-            while (reader.readLine().also { line = it } != null) {
-                if (line!!.contains("val vName")) {
-                    actualVersion = line!!.substringAfter("val vName = \"").substringBefore("\"")
-                    break
+            var actualVersion = ""
+            if (body != null) {
+                val regex = Regex("val vName = \"(.*)\"")
+                val matchResult = regex.find(body)
+                if (matchResult != null) {
+                    actualVersion = matchResult.groupValues[1]
                 }
             }
 

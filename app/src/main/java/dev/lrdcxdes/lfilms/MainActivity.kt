@@ -137,7 +137,7 @@ fun MovieApp() {
     }
 
     LFilmsTheme(theme = currentTheme.value, dynamicColor = false) {
-        AutoUpdate()
+        AutoUpdate(api.client)
 
         if (defaultMoviesListState.value == null || mirror.isEmpty()) {
             CircularProgressIndicator(

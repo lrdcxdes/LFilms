@@ -39,6 +39,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import dev.lrdcxdes.lfilms.R
 import dev.lrdcxdes.lfilms.Theme
+import dev.lrdcxdes.lfilms.api
 import dev.lrdcxdes.lfilms.helper.checkForUpdates
 import dev.lrdcxdes.lfilms.helper.downloadAndInstallApk
 import kotlinx.coroutines.launch
@@ -318,10 +319,10 @@ fun CheckUpdateItem(
                 Button(
                     onClick = {
                         scope.launch {
-                            checkForUpdates(newVersion) { version ->
+                            checkForUpdates(newVersion, api.client) { version ->
                                 newVersion = version
                                 scope.launch {
-                                    downloadAndInstallApk(context, version)
+                                    downloadAndInstallApk(context, version, api.client)
                                 }
                             }
                         }

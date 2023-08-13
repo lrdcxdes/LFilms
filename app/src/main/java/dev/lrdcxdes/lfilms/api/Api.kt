@@ -58,7 +58,7 @@ class Api {
     }
 
 
-    private var client: OkHttpClient = OkHttpClient.Builder()
+    var client: OkHttpClient = OkHttpClient.Builder()
         .callTimeout(15, TimeUnit.SECONDS)
         .addInterceptor(DefaultInterceptor(userAgent))
         .addInterceptor(ErrorInterceptor())

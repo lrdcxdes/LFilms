@@ -5,7 +5,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.SubcomposeAsyncImage
+import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import dev.lrdcxdes.lfilms.R
 import dev.lrdcxdes.lfilms.api.MoviePreview
@@ -57,7 +55,7 @@ fun MovieCard(movie: MoviePreview, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation()
     ) {
         Column {
-            SubcomposeAsyncImage(
+            AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(movie.imageUrl)
                     .placeholder(R.drawable.ic_placeholder)
@@ -71,14 +69,7 @@ fun MovieCard(movie: MoviePreview, onClick: () -> Unit) {
                     .height(200.dp) // Set a fixed height for the image
                     .clip(shape = RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop,
-                alignment = Alignment.Center,
-                loading = {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .fillMaxSize(0.4f)
-                            .align(Alignment.Center)
-                    )
-                }
+                alignment = Alignment.Center
             )
 
             Spacer(modifier = Modifier.height(8.dp))
