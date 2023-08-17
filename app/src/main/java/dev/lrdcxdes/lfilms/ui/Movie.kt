@@ -123,6 +123,8 @@ fun MovieScreen(
             val loadedMovie = try {
                 api.getMovie(path)
             } catch (e: ApiError) {
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
                 null
             }
             movieS.value = loadedMovie
@@ -800,8 +802,8 @@ fun WatchBottomSheetContentSerial(
     onResolutionSelected: (Stream) -> Unit,
 ) {
     var showDialog by remember { mutableStateOf<String?>(null) }
-    var seasons by remember { mutableStateOf(listOf<Season>()) }
-    var resolutions by remember { mutableStateOf(listOf<Stream>()) }
+    var seasons by remember { mutableStateOf(emptyList<Season>()) }
+    var resolutions by remember { mutableStateOf(emptyList<Stream>()) }
 
     val seasonLocale = LocalContext.current.getString(R.string.season)
     val episodeLocale = LocalContext.current.getString(R.string.episode)
@@ -1012,7 +1014,9 @@ fun WatchBottomSheetContentSerial(
                                     // Close the dialog and load episodes for the selected season
                                     showDialog = null
                                     // Load episodes for the selected season using the API
-                                    onSeasonSelected(seasons.first())
+                                    if (seasons.isNotEmpty()) {
+                                        onSeasonSelected(seasons.first())
+                                    }
                                 }
                             ) {
                                 Text(LocalContext.current.getString(R.string.confirm))
@@ -1438,6 +1442,15 @@ fun WatchBottomSheet(
 
         LaunchedEffect(Unit) {
             // Load seasons for the selected translation
+            if (movie.translations.isEmpty()) {
+                Toast.makeText(
+                    context,
+                    "No translations found for this movie",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@LaunchedEffect
+            }
+
             loadSeasonsForSelectedTranslation(
                 selectedTranslation.value ?: movie.translations.first()
             ).join()

@@ -1,13 +1,14 @@
 package dev.lrdcxdes.lfilms.helper
 
 import dev.lrdcxdes.lfilms.api
+import dev.lrdcxdes.lfilms.api.ApiError
 import dev.lrdcxdes.lfilms.api.MoviesList
 
 suspend fun getHints(query: String): List<String> {
     if (query.isEmpty()) return emptyList()
     val result = try {
         api.searchAjax(query).map { it.title }
-    } catch (e: Exception) {
+    } catch (e: ApiError) {
         emptyList()
     }
     return if (query.lowercase() in result.map { it.lowercase() }) emptyList() else result

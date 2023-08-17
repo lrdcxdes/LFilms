@@ -280,8 +280,13 @@ fun HomeScreen(
                                     .clickable {
                                         selectedCategory = category
                                         scope.launch {
-                                            moviesList = defaultList(category = category.name)
-                                            onSearchResult(moviesList)
+                                            try {
+                                                moviesList = defaultList(category = category.name)
+                                                onSearchResult(moviesList)
+                                            } catch (e: ApiError) {
+                                                Log.e("defaultList()", "Network error: ${e.message}")
+                                                networkError = true
+                                            }
                                         }
                                     }
                                     .padding(8.dp)
